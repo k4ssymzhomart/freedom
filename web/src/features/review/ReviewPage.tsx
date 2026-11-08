@@ -142,12 +142,12 @@ function AppealCard({ a }: { a: AppealWithContext }) {
         </div>
         <p className="text-[14px] leading-[1.55] text-text-2">{a.explanation}</p>
         {evidence ? (
-          <div className="rounded-[14px] bg-accent-subtle px-4 py-3 font-mono text-[12px]">
+          <div className="border-l-2 border-brand pl-4 font-mono text-[12px] leading-[1.6]">
             <span className="num mr-2 text-text-2">[{evidence.turn_idx + 1}]</span>
             <span className="font-sans">{truncate(evidence.quote, 240)}</span>
           </div>
         ) : null}
-        <div className="rounded-[14px] bg-dot-warn/15 px-4 py-3 text-caption">
+        <div className="border-l-2 border-dot-warn pl-4 text-caption">
           <div className="mb-1 flex items-center justify-between">
             <span className="label">{t("review.comment")}</span>
             <span className="text-[11px] text-text-2">{a.author_label}</span>
@@ -155,7 +155,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
           {a.comment}
         </div>
         {a.decision ? (
-          <div className={cn("rounded-[14px] px-4 py-3 text-caption", a.decision.action === "confirm" ? "bg-accent-subtle" : "bg-surface-2")}>
+          <div className={cn("border-l-2 pl-4 text-caption", a.decision.action === "confirm" ? "border-brand" : "border-line-strong/40")}>
             <div className="mb-1 flex items-center justify-between">
               <span className="label">{t("review.decision")}</span>
               <span className="text-[11px] text-text-2">
@@ -174,7 +174,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
       {isOpen ? (
         <div className="flex flex-col gap-4 border-t border-line bg-bg p-6 lg:border-l lg:border-t-0">
           <h3 className="font-display text-h3">{t("review.decision")}</h3>
-          {role !== "reviewer" ? <div className="rounded-[14px] bg-dot-warn/15 px-4 py-3 text-caption text-text">{t("review.reviewerOnly")}</div> : null}
+          {role !== "reviewer" ? <div className="flex items-center gap-2 border-t border-line pt-4 text-caption text-text"><span className="dot bg-dot-warn" />{t("review.reviewerOnly")}</div> : null}
           <Segmented
             value={action}
             onChange={setAction}
@@ -213,7 +213,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
           <label className="flex items-center gap-2 text-caption">
             <Switch checked={fewshot} onCheckedChange={setFewshot} disabled={role !== "reviewer"} /> {t("review.fewshot")}
           </label>
-          <div className="flex items-center justify-between gap-3 rounded-[14px] bg-surface px-4 py-3">
+          <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
             <div>
               <div className="text-caption text-text-2">{t("review.preview")}</div>
               <div className="text-[11px] text-text-2">{t("review.previewHint")}</div>

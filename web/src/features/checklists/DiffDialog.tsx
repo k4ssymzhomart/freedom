@@ -80,7 +80,7 @@ export function DiffBody({ diff }: { diff: NonNullable<ReturnType<typeof useDiff
   const empty = diff.added.length === 0 && diff.removed.length === 0 && diff.changed.length === 0 && !diff.scoring_rules_changed;
   if (empty) return <div className="text-caption text-text-2">{t("checklists.diff.empty")}</div>;
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col divide-y divide-line border-y border-line">
       {diff.scoring_rules_changed ? (
         <Row tone="warning" code="scoring_rules" label={t("checklists.diff.scoringChanged")} />
       ) : null}
@@ -101,7 +101,7 @@ function Row({ tone, code, label, rejudge }: { tone: "success" | "critical" | "i
   const { t } = useTranslation();
   const bar = tone === "success" ? "bg-dot-ok" : tone === "critical" ? "bg-dot-flag" : tone === "warning" ? "bg-dot-warn" : "bg-dot-info";
   return (
-    <div className="flex items-center gap-3 rounded-[14px] bg-bg px-4 py-3 text-caption">
+    <div className="flex items-center gap-3 py-3 text-caption">
       <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />
       <span className="min-w-16 shrink-0 font-mono font-semibold">{code}</span>
       <span className="min-w-0 flex-1 text-text-2">{label}</span>

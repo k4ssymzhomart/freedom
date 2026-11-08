@@ -22,8 +22,8 @@ export function EvaluationPanel({ evaluation: ev, onEvidence, onSpan, canAppeal,
   const { t } = useTranslation();
   const criteria = ev.criteria ?? [];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-7 rounded-lg border border-line bg-surface px-6 py-5">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center gap-7">
         <ScoreRing value={ev.final_total_score} original={ev.total_score} label={t("card.total")} />
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2 text-caption">
@@ -47,15 +47,15 @@ export function EvaluationPanel({ evaluation: ev, onEvidence, onSpan, canAppeal,
       </div>
 
       {ev.status && ev.status !== "completed" ? (
-        <div className="flex items-center gap-3 rounded-md bg-dot-warn/15 px-4 py-3 text-caption">
+        <div className="flex items-center gap-3 border-l-2 border-dot-warn bg-dot-warn/10 px-4 py-3 text-caption">
           <Badge variant="warning">{t(`status.${ev.status}` as never, { defaultValue: ev.status })}</Badge>
           <span className="text-text-2">{ev.error ?? ""}</span>
         </div>
       ) : null}
 
       {ev.critical_error ? (
-        <div className="flex items-center gap-3 rounded-md bg-critical/[0.08] px-4 py-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface text-critical">
+        <div className="flex items-center gap-3 border-l-2 border-critical bg-critical/[0.06] px-4 py-3">
+          <div className="flex size-8 shrink-0 items-center justify-center text-critical">
             <AlertOctagon className="size-5" />
           </div>
           <div>
@@ -66,11 +66,11 @@ export function EvaluationPanel({ evaluation: ev, onEvidence, onSpan, canAppeal,
       ) : null}
 
       {ev.sections?.length ? (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-y-5 border-t border-line pt-5 md:grid-cols-4 md:divide-x md:divide-line">
           {ev.sections.map((s) => {
             const pct = s.max > 0 ? (s.score / s.max) * 100 : null;
             return (
-              <div key={s.code} className="rounded-md border border-line bg-surface p-4">
+              <div key={s.code} className="min-w-0 px-4 first:pl-0 last:pr-0">
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="label">{s.code}</span>
                   <span className="num whitespace-nowrap font-mono text-[12px]">
@@ -80,7 +80,7 @@ export function EvaluationPanel({ evaluation: ev, onEvidence, onSpan, canAppeal,
                 <div className="mt-1.5 truncate text-caption font-medium" title={s.title}>
                   {s.title}
                 </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                <div className="mt-3 h-1 overflow-hidden rounded-full bg-surface-2">
                   <div className={cn("h-full rounded-full", pct === null ? "bg-line" : pct >= 85 ? "bg-dot-ok" : pct >= 60 ? "bg-dot-warn" : "bg-dot-flag")} style={{ width: `${pct ?? 0}%` }} />
                 </div>
               </div>
@@ -89,7 +89,7 @@ export function EvaluationPanel({ evaluation: ev, onEvidence, onSpan, canAppeal,
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col divide-y divide-line border-t border-line">
         {criteria.map((c) => (
           <CriterionRow key={c.id} c={c} onEvidence={onEvidence} onSpan={onSpan} canAppeal={canAppeal} onAppeal={onAppeal} hasAudio={hasAudio} />
         ))}

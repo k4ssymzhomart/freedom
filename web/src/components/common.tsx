@@ -129,7 +129,7 @@ export function AnswerLabel({ answer, applicable, answerType }: { answer: string
 /** `mascot` is accepted for backwards compatibility and ignored: the white theme has no mascot. */
 export function EmptyState({ title, hint, icon, action, className }: { title: string; hint?: string; icon?: React.ReactNode; action?: React.ReactNode; className?: string; mascot?: string }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-2 rounded-lg border border-line bg-surface px-6 py-14 text-center", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-2 px-6 py-14 text-center", className)}>
       <div className="mb-2 flex size-14 items-center justify-center rounded-full bg-surface-2 text-text [&_svg]:size-6">{icon ?? <Inbox />}</div>
       <div className="font-display text-h3">{title}</div>
       {hint ? <div className="max-w-sm text-caption text-text-2">{hint}</div> : null}
@@ -226,8 +226,8 @@ export function JsonView({ value, maxHeight = 320, className, defaultOpen = fals
     }
   }, [value]);
   return (
-    <div className={cn("overflow-hidden rounded-md bg-bg", className)}>
-      <div className="flex items-center justify-between py-1 pl-3 pr-1">
+    <div className={cn("overflow-hidden border-t border-line", className)}>
+      <div className="flex items-center justify-between py-1.5">
         <button type="button" className="flex items-center gap-1.5 text-caption font-medium text-text hover:text-text" onClick={() => setOpen((o) => !o)}>
           {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
           <span>{title ?? "JSON"}</span>
@@ -244,7 +244,7 @@ export function JsonView({ value, maxHeight = 320, className, defaultOpen = fals
         </Button>
       </div>
       {open ? (
-        <pre className="overflow-auto whitespace-pre-wrap break-words border-t border-line px-3 py-2.5 font-mono text-[12px] leading-[18px] text-text" style={{ maxHeight }}>
+        <pre className="mb-3 overflow-auto whitespace-pre-wrap break-words border-l-2 border-line py-1 pl-4 pr-2 font-mono text-[12px] leading-[18px] text-text" style={{ maxHeight }}>
           {text}
         </pre>
       ) : null}
@@ -253,9 +253,9 @@ export function JsonView({ value, maxHeight = 320, className, defaultOpen = fals
 }
 
 /** Stat tile: mono label, 32px number, one-line caption. */
-export function Kpi({ label, value, hint, tone }: { label: string; value: React.ReactNode; hint?: React.ReactNode; tone?: ScoreTone }) {
+export function Kpi({ label, value, hint, tone, flat }: { label: string; value: React.ReactNode; hint?: React.ReactNode; tone?: ScoreTone; flat?: boolean }) {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-line bg-surface p-5">
+    <div className={cn("flex flex-col gap-2", flat ? "border-l border-line px-4 py-1" : "rounded-md border border-line bg-surface p-5")}>
       <div className="label flex items-center gap-1.5">
         {tone && tone !== "neutral" ? <span className={cn("dot", toneDot[tone])} /> : null}
         {label}

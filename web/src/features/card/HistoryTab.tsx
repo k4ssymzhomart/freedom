@@ -33,18 +33,18 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
     .filter((x) => x.appeals.length > 0);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-md border border-line bg-surface">
-        <div className="px-5 pb-2 pt-4">
+    <div className="flex flex-col">
+      <section>
+        <div className="pb-3">
           <h3 className="font-display text-h3">{t("card.history.title")}</h3>
         </div>
-        <ul>
+        <ul className="border-b border-line">
           {items.map((e) => (
             <li key={e.id}>
               <button
                 type="button"
                 onClick={() => setSelectedId(e.id)}
-                className={cn("flex w-full flex-wrap items-center gap-3 border-t border-line px-5 py-3 text-left text-caption transition-colors hover:bg-bg", activeId === e.id && "bg-accent-subtle/60 hover:bg-accent-subtle/60")}
+                className={cn("-mx-2 flex w-[calc(100%+1rem)] flex-wrap items-center gap-3 border-t border-line px-2 py-4 text-left text-caption transition-colors hover:bg-surface-2/60", activeId === e.id && "bg-accent-subtle/60 hover:bg-accent-subtle/60")}
               >
                 <span className="num font-mono text-text-2">#{e.id}</span>
                 <span className="text-text-2">{fmtDate(e.completed_at ?? e.created_at, dateLocale())}</span>
@@ -62,23 +62,23 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
             </li>
           ))}
         </ul>
-      </div>
+      </section>
 
-      <div className="rounded-md border border-line bg-surface">
-        <div className="px-5 pb-1 pt-4">
+      <section className="mt-8">
+        <div className="pb-1">
           <h3 className="flex items-center gap-2 font-display text-h3">
             {t("card.history.timeline")} {active ? <span className="num rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-normal text-text-2">#{active.id}</span> : null}
           </h3>
         </div>
-        <div className="px-5 pb-5 pt-3">
+        <div className="pt-4">
           {detail.isLoading ? (
             <LoadingBlock rows={3} />
           ) : timeline.length === 0 ? (
             <div className="text-caption text-text-2">{t("card.history.noAppeals")}</div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col divide-y divide-line">
               {timeline.map(({ c, appeals }) => (
-                <div key={c.id} className="flex flex-col gap-2">
+                <div key={c.id} className="flex flex-col gap-3 py-5 first:pt-0 last:pb-0">
                   <div className="flex flex-wrap items-center gap-2 text-caption">
                     <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{c.code}</span>
                     <span className="font-semibold">{c.title}</span>
@@ -112,7 +112,7 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
             </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

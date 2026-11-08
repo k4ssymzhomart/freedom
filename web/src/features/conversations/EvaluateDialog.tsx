@@ -196,7 +196,7 @@ export function EvaluateDialog({ open, onOpenChange, conversationIds, allowScope
             ) : null}
           </div>
 
-          <div className="flex min-h-[52px] items-center justify-between rounded-[14px] bg-bg px-4 py-3 text-caption">
+          <div className="flex min-h-[52px] items-center justify-between border-t border-line pt-4 text-caption">
             <span className="text-text-2">{t("conversations.evaluateDialog.estimate")}</span>
             {estimate ? (
               <div className="flex flex-wrap items-center justify-end gap-2">

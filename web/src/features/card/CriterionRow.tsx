@@ -32,8 +32,8 @@ export function CriterionRow({ c, onEvidence, onSpan, canAppeal, onAppeal, hasAu
   const finalEarned = changed ? c.final_earned : c.earned;
 
   return (
-    <div className={cn("overflow-hidden rounded-md border border-line bg-surface transition-colors", critical && "border-critical/40", underReview && "border-dot-warn")}>
-      <div className={cn("flex items-start gap-3 px-5 py-4", na && "opacity-75")}>
+    <div className={cn("border-l-2 border-l-transparent transition-colors", critical && "border-l-dot-flag", underReview && "border-l-dot-warn")}>
+      <div className={cn("flex items-start gap-3 py-5 pl-2 pr-1", na && "opacity-75")}>
         <button type="button" className="mt-0.5 flex size-6 items-center justify-center rounded-full text-text-2 hover:bg-surface-2 hover:text-text" onClick={() => setOpen((o) => !o)} aria-label={open ? t("common.collapse") : t("common.expand")}>
           {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         </button>
@@ -97,9 +97,9 @@ export function CriterionRow({ c, onEvidence, onSpan, canAppeal, onAppeal, hasAu
         </div>
       </div>
       {open ? (
-        <div className="flex flex-col gap-3 border-t border-line px-5 py-4 pl-14">
+        <div className="flex flex-col gap-4 pb-6 pl-11 pr-1">
           {na && c.na_reason ? (
-            <div className="rounded-[12px] bg-bg px-3.5 py-2.5 text-caption">
+            <div className="border-l-2 border-line pl-4 text-caption">
               <span className="label mr-2">{t("card.naReason")}</span>
               <span className="text-text-2">{c.na_reason}</span>
             </div>
@@ -143,7 +143,7 @@ export function CriterionRow({ c, onEvidence, onSpan, canAppeal, onAppeal, hasAu
             </div>
           ) : null}
           {c.votes?.length ? (
-            <div className="rounded-[12px] bg-bg px-3.5 py-3">
+            <div>
               <div className="label mb-2">{t("card.votes")}</div>
               <div className="flex flex-wrap gap-2">
                 {c.votes.map((v, i) => (
@@ -156,7 +156,7 @@ export function CriterionRow({ c, onEvidence, onSpan, canAppeal, onAppeal, hasAu
             </div>
           ) : null}
           {c.claims?.length ? (
-            <div className="rounded-[12px] bg-bg px-3.5 py-3">
+            <div>
               <div className="label mb-2">{t("card.claims")}</div>
               <ul className="flex flex-col gap-1 text-[12px]">
                 {c.claims.map((cl, i) => (
@@ -177,14 +177,14 @@ export function CriterionRow({ c, onEvidence, onSpan, canAppeal, onAppeal, hasAu
             </div>
           ) : null}
           {c.appeal ? (
-            <div className={cn("rounded-[12px] px-3.5 py-3 text-caption", c.appeal.status === "open" ? "bg-dot-warn/15" : "bg-surface-2")}>
+            <div className={cn("border-l-2 pl-4 text-caption", c.appeal.status === "open" ? "border-dot-warn" : "border-brand")}>
               <div className="flex items-center justify-between">
                 <span className="font-medium">{c.appeal.status === "open" ? t("card.appealOpen") : t("card.appealDecided")}</span>
                 <span className="text-[11px] text-text-2">{c.appeal.author_label}</span>
               </div>
               <div className="mt-0.5 text-text-2">{c.appeal.comment}</div>
               {c.appeal.decision ? (
-                <div className="mt-2 border-t border-text/10 pt-2">
+                <div className="mt-2 border-t border-line pt-2">
                   <span className="font-medium">{c.appeal.decision.action === "confirm" ? t("card.history.confirmed") : t("card.history.changedTo", { answer: answerText(c.appeal.decision.new_answer, t) })}</span>
                   <span className="text-text-2"> — {c.appeal.decision.reason}</span>
                   <span className="ml-1 text-[11px] text-text-2">· {c.appeal.decision.reviewer_label}</span>
