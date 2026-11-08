@@ -270,10 +270,10 @@ export default function ChecklistEditorPage() {
             {advanced?.judge_spec ? (
               <>
                 {advanced.judge_spec.definition ? (
-                  <div className="rounded-md bg-bg px-4 py-3 text-caption leading-[1.55]">{advanced.judge_spec.definition}</div>
+                  <div className="rounded-[14px] bg-bg px-4 py-3 text-caption leading-[1.55]">{advanced.judge_spec.definition}</div>
                 ) : null}
                 {advanced.judge_spec.decision_steps?.length ? (
-                  <ol className="list-decimal space-y-1 pl-5 text-caption text-text">
+                  <ol className="list-decimal space-y-1.5 pl-5 text-caption leading-[1.55] text-text">
                     {advanced.judge_spec.decision_steps.map((s, i) => (
                       <li key={i}>{s}</li>
                     ))}

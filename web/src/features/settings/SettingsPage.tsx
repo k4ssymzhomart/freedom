@@ -154,14 +154,14 @@ export default function SettingsPage() {
           {settings.data?.cost_rates ? (
             <Section title={t("settings.costRates")} bodyClassName="px-5 pb-3">
               {Object.entries(settings.data.cost_rates).map(([m, r]) => (
-                <KeyValue key={m} k={<span className="font-mono">{m}</span>} v={<span className="font-mono">{(r as number[]).map((x) => `$${x}`).join(" / ")}</span>} />
+                <KeyValue key={m} k={<span className="break-all font-mono">{m}</span>} v={<span className="font-mono">{(r as number[]).map((x) => `$${x}`).join(" / ")}</span>} />
               ))}
             </Section>
           ) : null}
           {settings.data?.ensemble_members?.length ? (
             <Section title={t("provider.ensemble")} bodyClassName="px-5 pb-3">
               {settings.data.ensemble_members.map((m, i) => (
-                <KeyValue key={i} k={m.provider} v={<span className="font-mono">{m.model}</span>} />
+                <KeyValue key={i} k={m.provider} v={<span className="break-all text-right font-mono">{m.model}</span>} />
               ))}
             </Section>
           ) : null}

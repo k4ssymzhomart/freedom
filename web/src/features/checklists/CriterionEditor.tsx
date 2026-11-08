@@ -112,7 +112,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
               <Label>{t("checklists.editor.voiceOverride")}</Label>
               <Textarea value={voice} onChange={(e) => set("channel_overrides", { ...c.channel_overrides, "voice call": { instruction: e.target.value } })} className="min-h-[72px]" placeholder="—" />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5 rounded-[14px] bg-surface-2/60 px-4 py-3">
               <label className="flex items-center gap-2 text-caption">
                 <Switch checked={c.na_allowed} onCheckedChange={(v) => set("na_allowed", v)} /> {t("checklists.editor.naAllowed")}
               </label>
@@ -152,7 +152,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
                   <Input value={o.label} onChange={(e) => setOption(i, { label: e.target.value })} />
                   <Input type="number" value={o.points} onChange={(e) => setOption(i, { points: Number(e.target.value) })} className="font-mono" />
                   <Input value={o.anchor ?? ""} onChange={(e) => setOption(i, { anchor: e.target.value })} placeholder="—" />
-                  <Button size="icon-sm" variant="ghost" className="text-critical" onClick={() => onChange({ ...c, options: c.options.filter((_, j) => j !== i) })} disabled={c.options.length <= 2}>
+                  <Button size="icon-sm" variant="ghost" className="text-critical" onClick={() => onChange({ ...c, options: c.options.filter((_, j) => j !== i) })} disabled={c.options.length <= 2} aria-label={t("checklists.editor.remove")}>
                     <Trash2 />
                   </Button>
                 </div>

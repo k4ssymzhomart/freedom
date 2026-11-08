@@ -78,7 +78,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
   const fr = d.first_response;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
         <Kpi label={t("analytics.kpi.count")} value={d.count} />
         <Kpi label={t("analytics.kpi.mean")} value={fmtScore(d.mean_total)} tone={scoreTone(d.mean_total)} />
@@ -245,7 +245,9 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
               <TableBody>
                 {d.agreement.map((a) => (
                   <TableRow key={a.code}>
-                    <TableCell className="font-mono font-semibold">{a.code}</TableCell>
+                    <TableCell>
+                      <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{a.code}</span>
+                    </TableCell>
                     <TableCell className="num text-right font-mono">{a.n_reviewed}</TableCell>
                     <TableCell className="num text-right font-mono">{a.agreement_rate != null ? fmtPct(a.agreement_rate) : "—"}</TableCell>
                     <TableCell className="num text-right font-mono">{a.kappa != null ? a.kappa.toFixed(2) : "—"}</TableCell>

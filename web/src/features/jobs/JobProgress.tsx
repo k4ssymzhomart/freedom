@@ -35,16 +35,16 @@ export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: stri
   const tone = state.status === "failed" ? "critical" : state.failed > 0 ? "warning" : "accent";
 
   return (
-    <div className={cn("animate-fade-in rounded-md border border-line bg-surface", compact ? "px-4 py-3" : "px-5 py-4")}>
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          {state.status === "completed" ? <CheckCircle2 className="size-4 text-success" /> : state.status === "failed" || state.status === "cancelled" ? <XCircle className="size-4 text-critical" /> : <Radio className="size-4 animate-pulse-soft text-brand-ink" />}
+    <div className={cn("card animate-fade-in", compact ? "px-4 py-3" : "px-5 py-4")}>
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          {state.status === "completed" ? <CheckCircle2 className="size-4 shrink-0 text-success" /> : state.status === "failed" || state.status === "cancelled" ? <XCircle className="size-4 shrink-0 text-critical" /> : <Radio className="size-4 shrink-0 animate-pulse-soft text-brand-ink" />}
           <span className="text-caption font-semibold">{t("conversations.job.title")}</span>
-          <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-text-2">{jobId}</span>
+          <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium text-text-2">{jobId}</span>
           <Badge variant={terminal ? (state.status === "completed" ? "success" : "critical") : "accent"}>{t(`common.${state.status}` as never, { defaultValue: state.status })}</Badge>
           {!terminal ? <Badge variant="outline">{state.live ? t("conversations.job.live") : t("conversations.job.polling")}</Badge> : null}
         </div>
-        <div className="flex items-center gap-2 text-caption text-text-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-2">
           <span className="num font-mono">{t("conversations.job.progress", { done: state.done, total: state.total })}</span>
           {state.failed > 0 ? <span className="text-critical">{t("conversations.job.failed", { count: state.failed })}</span> : null}
           <span className="num font-mono">{t("conversations.job.cost", { cost: fmtMoney(state.cost, 2) })}</span>
@@ -69,13 +69,13 @@ export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: stri
           ) : null}
         </div>
       </div>
-      <Progress value={pct} tone={tone} className="mt-2" />
-      <div className="mt-1.5 flex items-center justify-between text-[11px] text-text-2">
-        <button type="button" className="flex items-center gap-1 hover:text-text" onClick={() => setShowLog((v) => !v)}>
+      <Progress value={pct} tone={tone} className="mt-3" />
+      <div className="mt-2 flex items-center justify-between gap-3 text-small text-text-2">
+        <button type="button" className="flex items-center gap-1 rounded-full transition-colors hover:text-text" onClick={() => setShowLog((v) => !v)}>
           {showLog ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
           {t("conversations.job.log")} ({state.log.length})
         </button>
-        {state.lastConversation ? <span className="font-mono">{state.lastConversation}</span> : null}
+        {state.lastConversation ? <span className="truncate font-mono text-[11px]">{state.lastConversation}</span> : null}
       </div>
       {showLog ? (
         <pre className="mt-2 max-h-40 overflow-auto rounded-[12px] bg-bg px-3.5 py-2.5 font-mono text-[11px] leading-[17px] text-text-2">

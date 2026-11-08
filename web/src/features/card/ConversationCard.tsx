@@ -104,7 +104,7 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
           </span>
           <ReviewBadge state={c.review_state} />
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           {ev ? (
             <>
               <Button variant="secondary" size="sm" asChild>

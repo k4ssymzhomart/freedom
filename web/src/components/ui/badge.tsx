@@ -12,7 +12,7 @@ const badgeVariants = cva(
     variants: {
       variant: {
         neutral: "bg-surface-2",
-        outline: "border border-line bg-surface text-text-2",
+        outline: "border border-line bg-surface py-[2px] text-text-2",
         accent: "bg-accent-subtle",
         success: "bg-surface-2 before:content-[''] before:dot before:bg-dot-ok",
         warning: "bg-surface-2 before:content-[''] before:dot before:bg-dot-warn",

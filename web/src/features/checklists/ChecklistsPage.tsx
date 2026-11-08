@@ -72,11 +72,11 @@ export default function ChecklistsPage() {
         (lists.data ?? []).map((cl) => (
           <div key={cl.id} className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
-              <div>
-                <div className="font-display text-[20px] font-semibold tracking-[-0.015em]">{cl.name}</div>
+              <div className="min-w-[280px] max-w-3xl flex-1">
+                <h3 className="font-display text-h3">{cl.name}</h3>
                 {cl.description ? <div className="mt-0.5 text-caption text-text-2">{cl.description}</div> : null}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {cl.active_version ? (
                   <Badge variant="accent">
                     <CheckCircle2 className="size-3" /> v{cl.active_version.version_no} · {cl.active_version.criteria.length} {t("checklists.editor.criteria").toLowerCase()}
@@ -116,7 +116,7 @@ export default function ChecklistsPage() {
                       <TableCell className="text-text-2">{fmtDate(v.created_at, dateLocale())}</TableCell>
                       <TableCell>{v.is_active ? <Badge variant="accent">{t("common.active")}</Badge> : <span className="text-text-2">—</span>}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1">
                           {!v.is_active ? (
                             <Button size="sm" variant="secondary" onClick={() => activate(cl.id, v.id, v.version_no)}>
                               {t("common.activate")}

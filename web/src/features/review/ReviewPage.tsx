@@ -119,8 +119,8 @@ function AppealCard({ a }: { a: AppealWithContext }) {
           {a.language ? <Badge variant="mono">{a.language}</Badge> : null}
           {a.channel ? <Badge variant="outline">{t(`channel.${a.channel}` as never, { defaultValue: a.channel })}</Badge> : null}
           <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{a.code}</span>
-          <span className="text-body font-semibold">{a.title}</span>
-          <span className="ml-auto font-mono text-[11px] text-text-2">{fmtDate(a.created_at, dateLocale())}</span>
+          <span className="min-w-0 text-body font-semibold">{a.title}</span>
+          <span className="ml-auto shrink-0 font-mono text-[11px] text-text-2">{fmtDate(a.created_at, dateLocale())}</span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-caption">
           <span className="inline-flex items-center gap-1.5">
@@ -213,7 +213,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
           <label className="flex items-center gap-2 text-caption">
             <Switch checked={fewshot} onCheckedChange={setFewshot} disabled={role !== "reviewer"} /> {t("review.fewshot")}
           </label>
-          <div className="flex items-center justify-between rounded-[14px] border border-line bg-surface px-4 py-3">
+          <div className="flex items-center justify-between gap-3 rounded-[14px] bg-surface px-4 py-3">
             <div>
               <div className="text-caption text-text-2">{t("review.preview")}</div>
               <div className="text-[11px] text-text-2">{t("review.previewHint")}</div>

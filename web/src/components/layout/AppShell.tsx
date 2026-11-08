@@ -106,7 +106,8 @@ export function SideNav() {
           <button
             type="button"
             onClick={() => setRole(role === "analyst" ? "reviewer" : "analyst")}
-            className="mx-auto mb-3 flex size-9 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white"
+            aria-label={t(`role.${role}`)}
+            className="mx-auto mb-3 flex size-9 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white transition-[filter] hover:brightness-95"
           >
             {t(`role.${role}`).slice(0, 1)}
           </button>
@@ -118,6 +119,7 @@ export function SideNav() {
         className={cn("text-text-2", navCollapsed ? "mx-auto" : "w-full justify-start")}
         onClick={() => setNavCollapsed(!navCollapsed)}
         title={navCollapsed ? t("nav.expand") : t("nav.collapse")}
+        aria-label={navCollapsed ? t("nav.expand") : t("nav.collapse")}
       >
         {navCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
         {!navCollapsed ? <span>{t("nav.collapse")}</span> : null}

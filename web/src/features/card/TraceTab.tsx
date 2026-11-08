@@ -21,7 +21,7 @@ export function TraceTab({ evaluation }: { evaluation: Evaluation | null }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-full bg-surface px-4 py-2.5 text-caption text-text-2 ring-1 ring-line">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
+      <div className="rounded-[14px] bg-surface px-4 py-2.5 text-caption text-text-2 ring-1 ring-line">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
       {items.map((x, i) => (
         <TraceCard key={x.id ?? i} x={x} votes={evaluation.criteria?.find((c) => c.code === x.criterion_code)?.votes ?? x.votes ?? null} />
       ))}
@@ -57,7 +57,7 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
         </span>
       </div>
       <div className="flex flex-col gap-2 px-5 pb-5">
-        {req?.system_chars ? <div className="text-[11px] text-text-2">system: {req.system_chars.toLocaleString()} chars</div> : null}
+        {req?.system_chars ? <div className="font-mono text-[11px] text-text-2">system: {req.system_chars.toLocaleString()} chars</div> : null}
         <JsonView value={messages} title={t("card.trace.request")} />
         <JsonView value={x.response} title={t("card.trace.response")} />
         {votes?.length ? (

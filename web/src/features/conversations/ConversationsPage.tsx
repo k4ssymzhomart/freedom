@@ -171,9 +171,9 @@ export default function ConversationsPage() {
 
       <div className="card overflow-hidden">
       <div className="flex flex-wrap items-center gap-2 px-5 py-4">
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-2" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("conversations.searchPlaceholder")} className="w-64 pl-10" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("conversations.searchPlaceholder")} className="w-full pl-10 sm:w-64" />
         </div>
         <Select value={channel} onValueChange={setChannel}>
           <SelectTrigger className="w-auto min-w-[150px]">
@@ -210,7 +210,7 @@ export default function ConversationsPage() {
         <div className="flex items-center gap-1.5 text-caption text-text-2">
           <span className="pl-1">{t("conversations.filters.score")}</span>
           <Input value={minT} onChange={(e) => setMinT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreFrom")} className="w-[68px] px-3 text-center font-mono" inputMode="numeric" />
-          <span>–</span>
+          <span className="text-text-2/70">–</span>
           <Input value={maxT} onChange={(e) => setMaxT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreTo")} className="w-[68px] px-3 text-center font-mono" inputMode="numeric" />
         </div>
         <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full px-2 text-caption text-text">
@@ -222,7 +222,7 @@ export default function ConversationsPage() {
             <X /> {t("conversations.filters.reset")}
           </Button>
         ) : null}
-        <div className="ml-auto flex items-center gap-2 text-caption text-text-2">
+        <div className="ml-auto flex items-center gap-2 whitespace-nowrap text-caption text-text-2">
           {selected.size > 0 ? (
             <>
               <span>{t("common.selected", { count: selected.size })}</span>
@@ -319,7 +319,7 @@ function Row({ c, selected, onToggle, onOpen }: { c: ConversationSummary; select
         <Checkbox checked={selected} onCheckedChange={onToggle} aria-label={c.id} />
       </TableCell>
       <TableCell className="whitespace-nowrap">
-        <Link to={`/conversations/${encodeURIComponent(c.id)}`} className="font-mono text-[12px] font-medium text-text hover:text-accent" onClick={(e) => e.stopPropagation()}>
+        <Link to={`/conversations/${encodeURIComponent(c.id)}`} className="font-mono text-[12px] font-medium text-text underline-offset-4 hover:underline" onClick={(e) => e.stopPropagation()}>
           {c.id}
         </Link>
       </TableCell>

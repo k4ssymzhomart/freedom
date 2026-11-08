@@ -79,7 +79,7 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
             <div className="flex flex-col gap-4">
               {timeline.map(({ c, appeals }) => (
                 <div key={c.id} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-caption">
+                  <div className="flex flex-wrap items-center gap-2 text-caption">
                     <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{c.code}</span>
                     <span className="font-semibold">{c.title}</span>
                     <ReviewBadge state={c.review_state} />
@@ -118,13 +118,13 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
 }
 
 function Step({ icon, title, meta, tone, children }: { icon: React.ReactNode; title: string; meta?: string; tone?: "warning" | "success" | "info"; children: React.ReactNode }) {
-  const ring = tone === "warning" ? "bg-dot-warn text-[#0e0e0d]" : tone === "success" ? "bg-brand text-white" : tone === "info" ? "bg-dot-info text-white" : "bg-surface-2 text-text";
+  const ring = tone === "warning" ? "bg-dot-warn text-text" : tone === "success" ? "bg-brand text-white" : tone === "info" ? "bg-dot-info text-white" : "bg-surface-2 text-text";
   return (
     <li className="relative">
       <span className={cn("absolute -left-[37px] top-0 flex size-6 items-center justify-center rounded-full ring-4 ring-surface", ring)}>{icon}</span>
       <div className="flex items-baseline gap-2 text-caption">
         <span className="font-medium">{title}</span>
-        {meta ? <span className="text-[11px] text-text-2">{meta}</span> : null}
+        {meta ? <span className="text-small text-text-2">{meta}</span> : null}
       </div>
       <div className="mt-0.5 text-caption text-text">{children}</div>
     </li>

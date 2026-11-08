@@ -64,7 +64,7 @@ export function UploadDialog({ open, onOpenChange, onCreated }: { open: boolean;
             <TabsContent value="paste" className="mt-3 flex flex-col gap-3">
               <div className="text-caption text-text-2">{t("conversations.uploadDialog.pasteHint")}</div>
               <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t("conversations.uploadDialog.pastePlaceholder")} className="min-h-[180px] font-mono text-[12px]" />
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="flex flex-col gap-1.5">
                   <Label>{t("conversations.uploadDialog.conversationId")}</Label>
                   <Input value={convId} onChange={(e) => setConvId(e.target.value)} placeholder="manual-001" className="font-mono" />
@@ -99,8 +99,10 @@ export function UploadDialog({ open, onOpenChange, onCreated }: { open: boolean;
             <TabsContent value="file" className="mt-3 flex flex-col gap-3">
               <div className="text-caption text-text-2">{t("conversations.uploadDialog.fileHint")}</div>
               <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-[1.5px] border-dashed border-text/20 bg-bg px-4 py-10 text-caption text-text-2 transition-colors hover:border-text/40 hover:bg-surface-2/50">
-                <Upload className="size-5" />
-                <span>{file ? file.name : t("conversations.uploadDialog.chooseFile")}</span>
+                <span className="grid size-10 place-items-center rounded-full bg-surface text-text">
+                  <Upload className="size-4" />
+                </span>
+                <span className={file ? "max-w-full truncate font-mono text-[12px] font-medium text-text" : undefined}>{file ? file.name : t("conversations.uploadDialog.chooseFile")}</span>
                 <input type="file" accept=".json,.txt,application/json,text/plain" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
               </label>
             </TabsContent>

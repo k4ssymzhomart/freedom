@@ -34,7 +34,7 @@ function highlight(text: string, q: string): React.ReactNode {
   return (
     <>
       {text.slice(0, i)}
-      <mark className="rounded-[4px] bg-dot-warn/60 text-text">{text.slice(i, i + q.length)}</mark>
+      <mark className="rounded-[6px] bg-dot-warn/60 px-0.5 text-text">{text.slice(i, i + q.length)}</mark>
       {highlight(text.slice(i + q.length), q)}
     </>
   );

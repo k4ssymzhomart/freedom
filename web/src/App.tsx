@@ -31,7 +31,16 @@ const queryClient = new QueryClient({
 });
 
 function ToasterThemed() {
-  return <Toaster theme="light" position="bottom-right" closeButton richColors={false} toastOptions={{ className: "!rounded-md !border-0 !bg-surface !text-text !shadow-float !font-sans", descriptionClassName: "!text-text-2" }} />;
+  return <Toaster theme="light" position="bottom-right" closeButton richColors={false} toastOptions={{
+        className: "!rounded-md !border-0 !bg-surface !text-text !shadow-float !font-sans",
+        descriptionClassName: "!text-text-2",
+        classNames: {
+          title: "!text-caption !font-medium",
+          closeButton: "!border-line !bg-surface !text-text-2 hover:!bg-surface-2 hover:!text-text",
+          actionButton: "!rounded-full !bg-accent !text-accent-fg",
+          cancelButton: "!rounded-full !bg-surface-2 !text-text",
+        },
+      }} />;
 }
 
 function Router() {
