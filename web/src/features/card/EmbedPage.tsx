@@ -7,7 +7,7 @@ export default function EmbedPage({ conversationId }: { conversationId: string |
   const { t } = useTranslation();
   if (!conversationId) {
     return (
-      <div className="p-6">
+      <div className="px-8 py-7">
         <EmptyState title={t("embed.title")} hint={t("embed.missing")} />
       </div>
     );

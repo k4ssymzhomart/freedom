@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState, ErrorState, LoadingBlock, ReviewBadge } from "@/components/common";
+import { PageTitle, useTitleSlot } from "@/components/chrome";
 import { Transcript, type TranscriptHandle } from "./Transcript";
 import { AudioPlayer, type AudioHandle } from "./AudioPlayer";
 import { EvaluationPanel } from "./EvaluationPanel";
@@ -39,6 +40,7 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
   const [reEvalOpen, setReEvalOpen] = React.useState(false);
   const [jobId, setJobId] = React.useState<string | null>(null);
   const [tab, setTab] = React.useState("result");
+  const slot = useTitleSlot();
 
   const evidenceTurns = React.useMemo(() => {
     const s = new Set<number>();
@@ -76,32 +78,33 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
   const ev = evaluation.data ?? null;
   const running = conv.data?.latest_evaluation && ["running", "queued"].includes(conv.data.latest_evaluation.status);
 
-  if (conv.isLoading) return <LoadingBlock rows={8} className="p-6" />;
-  if (conv.error) return <ErrorState error={conv.error} onRetry={() => conv.refetch()} className="m-6" />;
+  if (conv.isLoading) return <LoadingBlock rows={8} className="px-8 py-7" />;
+  if (conv.error) return <ErrorState error={conv.error} onRetry={() => conv.refetch()} className="mx-8 my-7" />;
   const c = conv.data!;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex shrink-0 flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-2.5">
+      <PageTitle crumb={t("nav.conversations")} title={<span className="font-mono tracking-[-0.03em]">{c.id}</span>} />
+      <header className="flex shrink-0 flex-wrap items-center gap-3 px-8 pb-4 pt-6">
         {!embed ? (
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label={t("common.back")}>
+          <Button variant="secondary" size="icon" onClick={onBack} aria-label={t("common.back")}>
             <ArrowLeft />
           </Button>
         ) : null}
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <span className="font-mono text-body font-semibold">{c.id}</span>
+          {!slot ? <span className="mr-1 font-mono text-h3">{c.id}</span> : null}
           <Badge variant="outline">
             {c.channel === "voice call" ? <Mic className="size-3" /> : null}
             {t(`channel.${c.channel}` as never, { defaultValue: c.channel })}
           </Badge>
           <Badge variant="mono">{c.language}</Badge>
-          {c.operator_name ? <span className="text-caption text-text-2">{c.operator_name}</span> : null}
-          <span className="num font-mono text-[11px] text-text-2">
+          {c.operator_name ? <span className="text-caption font-medium">{c.operator_name}</span> : null}
+          <span className="num px-1 font-mono text-[12px] text-text-2">
             {c.turn_count} {t("common.turns").toLowerCase()} · {t("conversations.columns.firstResponse")} {fmtSeconds(c.first_response_seconds)}
           </span>
           <ReviewBadge state={c.review_state} />
         </div>
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex items-center gap-2">
           {ev ? (
             <>
               <Button variant="secondary" size="sm" asChild>
@@ -129,7 +132,7 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
       </header>
 
       {jobId ? (
-        <div className="shrink-0 px-4 pt-3">
+        <div className="shrink-0 px-8 pb-4">
           <JobProgress
             jobId={jobId}
             compact
@@ -139,20 +142,20 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
         </div>
       ) : null}
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-0 lg:grid-cols-[minmax(360px,5fr)_minmax(420px,7fr)]">
-        <section className="flex min-h-0 flex-col border-b border-line lg:border-b-0 lg:border-r">
-          <div className="flex items-center justify-between border-b border-line px-3 py-2">
-            <span className="label">{t("card.transcript")}</span>
-            {c.meta?.operator_start_idx != null ? <span className="font-mono text-[11px] text-text-2">operator_start [{c.meta.operator_start_idx}]</span> : null}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 px-8 pb-6 lg:grid-cols-[minmax(360px,5fr)_minmax(420px,7fr)]">
+        <section className="card flex min-h-[480px] flex-col overflow-hidden lg:min-h-0">
+          <div className="flex min-h-[60px] items-center justify-between px-5 py-3">
+            <h2 className="font-display text-h3">{t("card.transcript")}</h2>
+            {c.meta?.operator_start_idx != null ? <span className="rounded-full bg-surface-2 px-2.5 py-1 font-mono text-[11px] text-text-2">operator_start [{c.meta.operator_start_idx + 1}]</span> : null}
           </div>
           {hasAudio ? <AudioPlayer ref={audio} conversationId={id} features={features.data ?? null} markers={markers} /> : null}
           <Transcript ref={transcript} turns={c.turns} activeTurn={activeTurn} activeSpan={activeSpan} evidenceTurns={evidenceTurns} onTurnClick={onTurnClick} hasAudio={hasAudio} />
         </section>
 
-        <section className="flex min-h-0 flex-col">
+        <section className="card flex min-h-[480px] flex-col overflow-hidden lg:min-h-0">
           <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col">
-            <div className="flex shrink-0 items-center justify-between border-b border-line px-3 py-2">
-              <span className="label">{t("card.verdict")}</span>
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-5 py-3">
+              <h2 className="font-display text-h3">{t("card.verdict")}</h2>
               <TabsList>
                 <TabsTrigger value="result">{t("card.tabs.result")}</TabsTrigger>
                 <TabsTrigger value="history">{t("card.tabs.history")}</TabsTrigger>
@@ -160,7 +163,7 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
                 <TabsTrigger value="audio">{t("card.tabs.audio")}</TabsTrigger>
               </TabsList>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto border-t border-line bg-bg/60 p-5">
               <TabsContent value="result">
                 {evaluation.isLoading ? (
                   <LoadingBlock rows={6} />
@@ -170,7 +173,6 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
                   <EvaluationPanel evaluation={ev} onEvidence={onEvidence} onSpan={onSpan} canAppeal={role === "analyst" && !embed} onAppeal={setAppealFor} hasAudio={hasAudio} />
                 ) : (
                   <EmptyState
-                    mascot={running ? "search" : undefined}
                     title={running ? t("status.running") : t("card.noEvaluation")}
                     hint={t("card.noEvaluationHint")}
                     action={

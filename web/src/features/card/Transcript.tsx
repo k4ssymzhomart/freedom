@@ -21,9 +21,9 @@ interface Props {
 }
 
 const speakerStyles: Record<string, string> = {
-  client: "self-end bg-surface-2 border-line text-text",
-  operator: "self-start bg-tint/70 border-accent/30 text-text",
-  bot: "self-start bg-surface border-line text-text-2 opacity-75",
+  client: "self-end rounded-br-[6px] bg-surface-2 border-transparent text-text",
+  operator: "self-start rounded-bl-[6px] bg-accent-subtle border-transparent text-text",
+  bot: "self-start rounded-bl-[6px] bg-surface border-dashed border-line text-text-2",
   system: "self-center bg-transparent border-transparent text-text-2",
 };
 
@@ -34,7 +34,7 @@ function highlight(text: string, q: string): React.ReactNode {
   return (
     <>
       {text.slice(0, i)}
-      <mark className="rounded-[2px] bg-warning/40 text-text">{text.slice(i, i + q.length)}</mark>
+      <mark className="rounded-[4px] bg-dot-warn/60 text-text">{text.slice(i, i + q.length)}</mark>
       {highlight(text.slice(i + q.length), q)}
     </>
   );
@@ -69,15 +69,15 @@ export const Transcript = React.forwardRef<TranscriptHandle, Props>(function Tra
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center gap-2 border-b border-line px-3 py-2">
+      <div className="flex items-center gap-2 px-5 pb-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-text-2" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("card.searchTranscript")} className="pl-7" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-2" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("card.searchTranscript")} className="pl-10" />
         </div>
         {q ? <span className="num text-caption text-text-2">{t("card.turnsMatched", { count: matches })}</span> : null}
         {dupCount > 0 ? <Badge variant="outline">{t("card.duplicates", { count: dupCount })}</Badge> : null}
       </div>
-      <div ref={container} className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto px-3 py-3">
+      <div ref={container} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto border-t border-line px-5 py-4">
         {turns.length === 0 ? <div className="py-8 text-center text-caption text-text-2">{t("card.noTurns")}</div> : null}
         {turns.map((turn) => {
           const segChanged = turn.segment !== lastSegment;
@@ -91,7 +91,7 @@ export const Transcript = React.forwardRef<TranscriptHandle, Props>(function Tra
           return (
             <React.Fragment key={turn.idx}>
               {segChanged ? (
-                <div className="my-2 flex items-center gap-2 text-[11px] uppercase tracking-[0.04em] text-text-2">
+                <div className="label my-3 flex items-center gap-3">
                   <div className="h-px flex-1 bg-line" />
                   <span>{t(`card.segments.${turn.segment}` as never, { defaultValue: turn.segment })}</span>
                   <div className="h-px flex-1 bg-line" />
@@ -100,10 +100,10 @@ export const Transcript = React.forwardRef<TranscriptHandle, Props>(function Tra
               {dupHidden ? (
                 <button
                   type="button"
-                  className="self-center rounded-full border border-dashed border-line px-2 py-0.5 font-mono text-[11px] text-text-2 hover:text-text"
+                  className="self-center rounded-full bg-surface-2 px-3 py-1 font-mono text-[11px] text-text-2 hover:text-text"
                   onClick={() => setShowDup((s) => new Set(s).add(turn.idx))}
                 >
-                  [{turn.idx}] {t("card.duplicate")} · {t("card.showDuplicate")}
+                  [{turn.idx + 1}] {t("card.duplicate")} · {t("card.showDuplicate")}
                 </button>
               ) : (
                 <div
@@ -113,20 +113,20 @@ export const Transcript = React.forwardRef<TranscriptHandle, Props>(function Tra
                   }}
                   onClick={() => onTurnClick?.(turn)}
                   className={cn(
-                    "group relative max-w-[88%] rounded-md border px-3 py-2 text-caption transition-shadow",
+                    "group relative max-w-[86%] rounded-[18px] border px-4 py-2.5 text-caption transition-shadow",
                     speakerStyles[turn.speaker] ?? speakerStyles.client,
                     turn.speaker === "system" && "max-w-full py-1 text-center font-mono text-[11px]",
                     isActive && "turn-highlight",
                     inSpan && !isActive && "turn-span",
-                    isEvidence && !isActive && "border-accent/50",
+                    isEvidence && !isActive && "border-brand/45",
                     turn.is_duplicate && "opacity-60",
                     onTurnClick && hasAudio && turn.offset_seconds !== null && "cursor-pointer",
-                    matched && "ring-1 ring-warning/60",
+                    matched && "ring-2 ring-dot-warn/70",
                   )}
                 >
-                  <div className={cn("mb-0.5 flex items-center gap-2 font-mono text-[11px] text-text-2", turn.speaker === "system" && "justify-center")}>
-                    <span className="num">[{turn.idx}]</span>
-                    <span className={cn("font-sans font-medium", turn.speaker === "operator" && "text-accent", turn.speaker === "client" && "text-text")}>
+                  <div className={cn("mb-1 flex items-center gap-2 font-mono text-[11px] text-text-2", turn.speaker === "system" && "justify-center")}>
+                    <span className="num">[{turn.idx + 1}]</span>
+                    <span className={cn("font-sans text-[12px] font-semibold", turn.speaker === "operator" && "text-brand-ink", turn.speaker === "client" && "text-text")}>
                       {t(`card.speakers.${turn.speaker}` as never, { defaultValue: turn.speaker })}
                     </span>
                     <span className="num">{fmtTurnTime(turn.timestamp_raw, turn.offset_seconds)}</span>
@@ -137,7 +137,7 @@ export const Transcript = React.forwardRef<TranscriptHandle, Props>(function Tra
                     ) : null}
                     {turn.is_duplicate ? <span className="opacity-70">{t("card.duplicate")}</span> : null}
                   </div>
-                  <div className={cn("whitespace-pre-wrap break-words leading-[18px]", turn.speaker === "system" && "text-[11px]")}>{highlight(text, q)}</div>
+                  <div className={cn("whitespace-pre-wrap break-words text-[14px] leading-[1.5]", turn.speaker === "system" && "text-[11px]")}>{highlight(text, q)}</div>
                 </div>
               )}
             </React.Fragment>

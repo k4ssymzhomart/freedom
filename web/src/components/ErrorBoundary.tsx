@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mascot } from "@/components/Mascot";
+import { AlertTriangle } from "lucide-react";
 
 interface State {
   error: Error | null;
@@ -21,10 +21,12 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
     if (this.state.error) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-          <Mascot pose="oops" size={120} />
-          <div className="text-h3 font-display">Something went wrong</div>
-          <pre className="max-w-xl whitespace-pre-wrap rounded-sm border border-line bg-surface px-3 py-2 text-left font-mono text-[12px] text-text-2">{this.state.error.message}</pre>
-          <button type="button" className="rounded-sm border border-line bg-surface px-3 py-1.5 text-caption hover:bg-surface-2" onClick={() => this.setState({ error: null })}>
+          <div className="flex size-14 items-center justify-center rounded-full bg-critical/10 text-critical">
+            <AlertTriangle className="size-6" />
+          </div>
+          <div className="font-display text-h3">Something went wrong</div>
+          <pre className="max-w-xl whitespace-pre-wrap rounded-md bg-surface-2 px-4 py-3 text-left font-mono text-[12px] text-text-2">{this.state.error.message}</pre>
+          <button type="button" className="h-10 rounded-full border-[1.5px] border-line-strong px-[18px] text-caption font-medium hover:bg-text/[0.04]" onClick={() => this.setState({ error: null })}>
             Retry
           </button>
         </div>

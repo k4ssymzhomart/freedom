@@ -11,8 +11,8 @@ export function AudioInsightsTab({ features, hasAudio, onSeek }: { features: Aud
   if (!features) return <EmptyState title={t("card.audio.unavailable")} />;
   return (
     <div className="flex flex-col gap-4">
-      {features.summary_ru ? <div className="rounded-md border border-accent/40 bg-tint/60 px-4 py-3 text-body">{features.summary_ru}</div> : null}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+      {features.summary_ru ? <div className="rounded-md bg-accent-subtle px-5 py-4 text-body">{features.summary_ru}</div> : null}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Kpi label={t("card.audio.duration")} value={fmtSeconds(features.duration_s)} />
         <Kpi label={t("card.audio.wpm")} value={features.operator_wpm != null ? Math.round(features.operator_wpm) : "—"} hint={features.speech_rate_label ? `${t("card.audio.rate")}: ${features.speech_rate_label}` : t("card.audio.wpmUnit")} />
         <Kpi label={t("card.audio.pauses")} value={features.long_pauses_count ?? features.long_pauses?.length ?? "—"} />
@@ -23,11 +23,11 @@ export function AudioInsightsTab({ features, hasAudio, onSeek }: { features: Aud
         <Kpi label={t("card.audio.repeated")} value={features.repeated_operator_lines ?? 0} />
       </div>
       {features.long_pauses?.length ? (
-        <div className="card">
-          <div className="border-b border-line px-4 py-2.5">
-            <div className="label">{t("card.audio.pauseList")}</div>
+        <div className="rounded-md border border-line bg-surface">
+          <div className="px-5 pb-2 pt-4">
+            <h3 className="font-display text-h3">{t("card.audio.pauseList")}</h3>
           </div>
-          <div className="flex flex-wrap gap-2 p-3">
+          <div className="flex flex-wrap gap-2 px-5 pb-5">
             {features.long_pauses.map((p, i) => (
               <Button key={i} size="sm" variant="secondary" className="font-mono" onClick={() => onSeek(Math.max(0, p.start - 1))} title={t("card.audio.seekTo", { time: fmtSeconds(p.start) })}>
                 {fmtSeconds(p.start)} – {fmtSeconds(p.end)} <Badge variant="warning">{(p.duration ?? p.end - p.start).toFixed(1)} s</Badge>
@@ -37,11 +37,11 @@ export function AudioInsightsTab({ features, hasAudio, onSeek }: { features: Aud
         </div>
       ) : null}
       {features.hold_segments?.length ? (
-        <div className="card">
-          <div className="border-b border-line px-4 py-2.5">
-            <div className="label">{t("card.audio.holds")}</div>
+        <div className="rounded-md border border-line bg-surface">
+          <div className="px-5 pb-2 pt-4">
+            <h3 className="font-display text-h3">{t("card.audio.holds")}</h3>
           </div>
-          <div className="flex flex-wrap gap-2 p-3">
+          <div className="flex flex-wrap gap-2 px-5 pb-5">
             {features.hold_segments.map((p, i) => (
               <Button key={i} size="sm" variant="secondary" className="font-mono" onClick={() => onSeek(Math.max(0, p.start - 1))}>
                 {fmtSeconds(p.start)} – {fmtSeconds(p.end)}

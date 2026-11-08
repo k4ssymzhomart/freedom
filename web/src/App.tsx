@@ -3,7 +3,7 @@ import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/misc";
-import { UiProvider, useUi } from "@/store/ui";
+import { UiProvider } from "@/store/ui";
 import { AppShell } from "@/components/layout/AppShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { embedConfig } from "@/lib/config";
@@ -31,8 +31,7 @@ const queryClient = new QueryClient({
 });
 
 function ToasterThemed() {
-  const { theme } = useUi();
-  return <Toaster theme={theme} position="bottom-right" closeButton richColors={false} toastOptions={{ className: "!rounded-md !border !border-line !bg-surface !text-text !shadow-float", descriptionClassName: "!text-text-2" }} />;
+  return <Toaster theme="light" position="bottom-right" closeButton richColors={false} toastOptions={{ className: "!rounded-md !border-0 !bg-surface !text-text !shadow-float !font-sans", descriptionClassName: "!text-text-2" }} />;
 }
 
 function Router() {

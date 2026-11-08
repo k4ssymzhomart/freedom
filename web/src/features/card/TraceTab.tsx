@@ -21,7 +21,7 @@ export function TraceTab({ evaluation }: { evaluation: Evaluation | null }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-caption text-text-2">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
+      <div className="rounded-full bg-surface px-4 py-2.5 text-caption text-text-2 ring-1 ring-line">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
       {items.map((x, i) => (
         <TraceCard key={x.id ?? i} x={x} votes={evaluation.criteria?.find((c) => c.code === x.criterion_code)?.votes ?? x.votes ?? null} />
       ))}
@@ -34,9 +34,9 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
   const req = x.request as { messages?: unknown; system_chars?: number } | null;
   const messages = req && typeof req === "object" && "messages" in req ? req.messages : x.request;
   return (
-    <div className="card">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-line px-4 py-2.5 text-caption">
-        <span className="font-mono font-semibold">{x.criterion_code}</span>
+    <div className="overflow-hidden rounded-md border border-line bg-surface">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3.5 text-caption">
+        <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{x.criterion_code}</span>
         <Badge variant={x.kind === "arbiter" ? "accent" : x.kind === "vote" ? "info" : "outline"}>{x.kind ?? "judge"}</Badge>
         <span className="text-text-2">{x.provider}</span>
         <span className="font-mono text-[12px]">{x.model}</span>
@@ -48,7 +48,7 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
             {(x.input_tokens ?? 0).toLocaleString()} → {(x.output_tokens ?? 0).toLocaleString()}
           </span>
           {x.cache_read_tokens ? (
-            <span title={t("card.trace.cacheRead")} className={cn("num", "text-accent")}>
+            <span title={t("card.trace.cacheRead")} className={cn("num", "text-brand-ink")}>
               {t("card.trace.cacheRead")} {x.cache_read_tokens.toLocaleString()}
             </span>
           ) : null}
@@ -56,7 +56,7 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
           <span className="num">{fmtMs(x.latency_ms)}</span>
         </span>
       </div>
-      <div className="flex flex-col gap-2 p-3">
+      <div className="flex flex-col gap-2 px-5 pb-5">
         {req?.system_chars ? <div className="text-[11px] text-text-2">system: {req.system_chars.toLocaleString()} chars</div> : null}
         <JsonView value={messages} title={t("card.trace.request")} />
         <JsonView value={x.response} title={t("card.trace.response")} />

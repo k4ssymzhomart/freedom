@@ -134,7 +134,7 @@ export default function ConversationsPage() {
   const filtersActive = q || channel !== ANY || language !== ANY || status !== ANY || minT || maxT || critical;
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-6 px-8 py-7">
       <PageHeader
         title={t("conversations.title")}
         subtitle={list.data ? t("conversations.subtitle", { total: list.data.total, evaluated }) : undefined}
@@ -169,13 +169,14 @@ export default function ConversationsPage() {
         <JobProgress key={id} jobId={id} onDismiss={() => setJobIds((prev) => prev.filter((j) => j !== id))} />
       ))}
 
-      <div className="card flex flex-wrap items-center gap-2 px-3 py-2">
+      <div className="card overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 px-5 py-4">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-text-2" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("conversations.searchPlaceholder")} className="w-56 pl-7" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-text-2" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("conversations.searchPlaceholder")} className="w-64 pl-10" />
         </div>
         <Select value={channel} onValueChange={setChannel}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-auto min-w-[150px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -185,7 +186,7 @@ export default function ConversationsPage() {
           </SelectContent>
         </Select>
         <Select value={language} onValueChange={setLanguage}>
-          <SelectTrigger className="w-28">
+          <SelectTrigger className="w-auto min-w-[130px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -196,7 +197,7 @@ export default function ConversationsPage() {
           </SelectContent>
         </Select>
         <Select value={status} onValueChange={setStatus}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-auto min-w-[160px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -206,13 +207,13 @@ export default function ConversationsPage() {
             <SelectItem value="under_review">{t("status.under_review")}</SelectItem>
           </SelectContent>
         </Select>
-        <div className="flex items-center gap-1 text-caption text-text-2">
-          <span>{t("conversations.filters.score")}</span>
-          <Input value={minT} onChange={(e) => setMinT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreFrom")} className="w-16 font-mono" inputMode="numeric" />
+        <div className="flex items-center gap-1.5 text-caption text-text-2">
+          <span className="pl-1">{t("conversations.filters.score")}</span>
+          <Input value={minT} onChange={(e) => setMinT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreFrom")} className="w-[68px] px-3 text-center font-mono" inputMode="numeric" />
           <span>–</span>
-          <Input value={maxT} onChange={(e) => setMaxT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreTo")} className="w-16 font-mono" inputMode="numeric" />
+          <Input value={maxT} onChange={(e) => setMaxT(e.target.value.replace(/[^\d.]/g, ""))} placeholder={t("conversations.filters.scoreTo")} className="w-[68px] px-3 text-center font-mono" inputMode="numeric" />
         </div>
-        <label className="flex cursor-pointer items-center gap-1.5 text-caption text-text-2">
+        <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full px-2 text-caption text-text">
           <Checkbox checked={critical} onCheckedChange={(v) => setCritical(v === true)} />
           {t("conversations.filters.critical")}
         </label>
@@ -235,57 +236,56 @@ export default function ConversationsPage() {
         </div>
       </div>
 
-      {list.isLoading ? (
-        <LoadingBlock rows={10} />
-      ) : list.error ? (
-        <ErrorState error={list.error} onRetry={() => list.refetch()} />
-      ) : visible.length === 0 ? (
-        <EmptyState
-          mascot={filtersActive ? undefined : "wave"}
-          title={filtersActive ? t("conversations.emptyFiltered") : t("conversations.empty")}
-          action={
-            filtersActive ? (
-              <Button variant="secondary" onClick={resetFilters}>
-                {t("conversations.filters.reset")}
-              </Button>
-            ) : (
-              <Button variant="primary" onClick={() => setImportOpen(true)}>
-                {t("conversations.import")}
-              </Button>
-            )
-          }
-        />
-      ) : (
-        <div className="card overflow-hidden">
-          <div className="max-h-[calc(100vh-280px)] overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-10">
-                    <Checkbox checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={toggleAll} aria-label={t("conversations.selectAll")} />
-                  </TableHead>
-                  <TableHead>{t("conversations.columns.id")}</TableHead>
-                  <TableHead>{t("conversations.columns.channel")}</TableHead>
-                  <TableHead>{t("conversations.columns.language")}</TableHead>
-                  <TableHead>{t("conversations.columns.operator")}</TableHead>
-                  <TableHead className="text-right">{t("conversations.columns.turns")}</TableHead>
-                  <TableHead className="text-right">{t("conversations.columns.firstResponse")}</TableHead>
-                  <TableHead className="text-right">{t("conversations.columns.score")}</TableHead>
-                  <TableHead>{t("conversations.columns.critical")}</TableHead>
-                  <TableHead>{t("conversations.columns.review")}</TableHead>
-                  <TableHead>{t("conversations.columns.provider")}</TableHead>
-                  <TableHead className="text-right">{t("conversations.columns.cost")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {visible.map((c) => (
-                  <Row key={c.id} c={c} selected={selected.has(c.id)} onToggle={() => toggle(c.id)} onOpen={() => navigate(`/conversations/${encodeURIComponent(c.id)}`)} />
-                ))}
-              </TableBody>
-            </Table>
+        {list.isLoading ? (
+          <LoadingBlock rows={10} className="px-5 pb-5" />
+        ) : list.error ? (
+          <ErrorState error={list.error} onRetry={() => list.refetch()} className="mx-5 mb-5" />
+        ) : visible.length === 0 ? (
+          <EmptyState
+            className="rounded-none border-0 border-t"
+            title={filtersActive ? t("conversations.emptyFiltered") : t("conversations.empty")}
+            action={
+              filtersActive ? (
+                <Button variant="secondary" onClick={resetFilters}>
+                  {t("conversations.filters.reset")}
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => setImportOpen(true)}>
+                  {t("conversations.import")}
+                </Button>
+              )
+            }
+          />
+        ) : (
+          <div className="max-h-[calc(100vh-300px)] overflow-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="w-10">
+                      <Checkbox checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={toggleAll} aria-label={t("conversations.selectAll")} />
+                    </TableHead>
+                    <TableHead>{t("conversations.columns.id")}</TableHead>
+                    <TableHead>{t("conversations.columns.channel")}</TableHead>
+                    <TableHead>{t("conversations.columns.language")}</TableHead>
+                    <TableHead>{t("conversations.columns.operator")}</TableHead>
+                    <TableHead className="text-right">{t("conversations.columns.turns")}</TableHead>
+                    <TableHead className="text-right">{t("conversations.columns.firstResponse")}</TableHead>
+                    <TableHead className="text-right">{t("conversations.columns.score")}</TableHead>
+                    <TableHead>{t("conversations.columns.critical")}</TableHead>
+                    <TableHead>{t("conversations.columns.review")}</TableHead>
+                    <TableHead>{t("conversations.columns.provider")}</TableHead>
+                    <TableHead className="text-right">{t("conversations.columns.cost")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {visible.map((c) => (
+                    <Row key={c.id} c={c} selected={selected.has(c.id)} onToggle={() => toggle(c.id)} onOpen={() => navigate(`/conversations/${encodeURIComponent(c.id)}`)} />
+                  ))}
+                </TableBody>
+              </Table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
       <UploadDialog

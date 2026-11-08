@@ -11,7 +11,6 @@ import { Progress } from "@/components/ui/misc";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useJobProgress } from "./useJobProgress";
-import { Mascot } from "@/components/Mascot";
 
 export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: string; onDone?: (status: string, job: Job | null) => void; onDismiss?: () => void; compact?: boolean }) {
   const { t } = useTranslation();
@@ -36,13 +35,12 @@ export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: stri
   const tone = state.status === "failed" ? "critical" : state.failed > 0 ? "warning" : "accent";
 
   return (
-    <div className={cn("card animate-fade-in", compact ? "px-3 py-2" : "px-4 py-3")}>
+    <div className={cn("animate-fade-in rounded-md border border-line bg-surface", compact ? "px-4 py-3" : "px-5 py-4")}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <Mascot pose={state.status === "completed" ? "check" : state.status === "failed" || state.status === "cancelled" ? "oops" : "search"} size={compact ? 28 : 36} decorative className="-my-1 shrink-0" />
-          {state.status === "completed" ? <CheckCircle2 className="size-4 text-success" /> : state.status === "failed" || state.status === "cancelled" ? <XCircle className="size-4 text-critical" /> : <Radio className="size-4 animate-pulse-soft text-accent" />}
-          <span className="text-caption font-medium">{t("conversations.job.title")}</span>
-          <span className="font-mono text-[11px] text-text-2">{jobId}</span>
+          {state.status === "completed" ? <CheckCircle2 className="size-4 text-success" /> : state.status === "failed" || state.status === "cancelled" ? <XCircle className="size-4 text-critical" /> : <Radio className="size-4 animate-pulse-soft text-brand-ink" />}
+          <span className="text-caption font-semibold">{t("conversations.job.title")}</span>
+          <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-text-2">{jobId}</span>
           <Badge variant={terminal ? (state.status === "completed" ? "success" : "critical") : "accent"}>{t(`common.${state.status}` as never, { defaultValue: state.status })}</Badge>
           {!terminal ? <Badge variant="outline">{state.live ? t("conversations.job.live") : t("conversations.job.polling")}</Badge> : null}
         </div>
@@ -80,7 +78,7 @@ export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: stri
         {state.lastConversation ? <span className="font-mono">{state.lastConversation}</span> : null}
       </div>
       {showLog ? (
-        <pre className="mono mt-2 max-h-40 overflow-auto rounded-sm border border-line bg-bg/60 px-3 py-2 text-[11px] leading-4 text-text-2">
+        <pre className="mt-2 max-h-40 overflow-auto rounded-[12px] bg-bg px-3.5 py-2.5 font-mono text-[11px] leading-[17px] text-text-2">
           {state.log.slice(-60).map((l, i) => (
             <div key={i} className={cn(l.level === "error" && "text-critical")}>
               <span className="opacity-50">{l.ts.slice(11, 19)}</span> {l.message}

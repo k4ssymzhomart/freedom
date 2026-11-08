@@ -98,7 +98,7 @@ export function UploadDialog({ open, onOpenChange, onCreated }: { open: boolean;
             </TabsContent>
             <TabsContent value="file" className="mt-3 flex flex-col gap-3">
               <div className="text-caption text-text-2">{t("conversations.uploadDialog.fileHint")}</div>
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-line px-4 py-8 text-caption text-text-2 hover:bg-surface-2/60">
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-[1.5px] border-dashed border-text/20 bg-bg px-4 py-10 text-caption text-text-2 transition-colors hover:border-text/40 hover:bg-surface-2/50">
                 <Upload className="size-5" />
                 <span>{file ? file.name : t("conversations.uploadDialog.chooseFile")}</span>
                 <input type="file" accept=".json,.txt,application/json,text/plain" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />

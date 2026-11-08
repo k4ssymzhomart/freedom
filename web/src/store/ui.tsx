@@ -15,15 +15,14 @@ interface UiState {
 
 const UiContext = React.createContext<UiState | null>(null);
 
-function applyTheme(t: Theme) {
-  const root = document.documentElement;
-  if (t === "dark") root.classList.add("dark");
-  else root.classList.remove("dark");
+/** The product ships a single white theme; `theme` stays in the API for callers but is always "light". */
+function applyTheme(_t: Theme) {
+  document.documentElement.classList.remove("dark");
 }
 
 export function UiProvider({ children }: { children: React.ReactNode }) {
   const [role, setRoleState] = React.useState<Role>(() => (readStorage("cqa.role") === "reviewer" ? "reviewer" : "analyst"));
-  const [theme, setThemeState] = React.useState<Theme>(() => (readStorage("cqa.theme") === "light" ? "light" : "dark"));
+  const [theme, setThemeState] = React.useState<Theme>("light");
   const [navCollapsed, setNavCollapsedState] = React.useState<boolean>(() => readStorage("cqa.nav") === "collapsed");
 
   React.useEffect(() => applyTheme(theme), [theme]);
@@ -36,10 +35,7 @@ export function UiProvider({ children }: { children: React.ReactNode }) {
         writeStorage("cqa.role", r);
       },
       theme,
-      setTheme: (t) => {
-        setThemeState(t);
-        writeStorage("cqa.theme", t);
-      },
+      setTheme: () => setThemeState("light"),
       navCollapsed,
       setNavCollapsed: (v) => {
         setNavCollapsedState(v);

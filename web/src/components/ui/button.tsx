@@ -4,25 +4,31 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** Pill button. Primary = ink, secondary = 1.5px ink outline, icon buttons = round white with a hairline. */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-medium leading-none transition-[background-color,border-color,color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-accent text-accent-fg hover:bg-accent-hover active:bg-deep active:text-white",
-        secondary: "border border-line bg-surface text-text hover:bg-surface-2",
+        primary: "bg-accent text-accent-fg hover:bg-accent-hover disabled:bg-surface-2 disabled:text-text-2 disabled:opacity-100",
+        secondary: "border-[1.5px] border-line-strong bg-transparent text-text hover:bg-text/[0.04]",
         ghost: "text-text-2 hover:bg-surface-2 hover:text-text",
-        destructive: "border border-critical/40 bg-critical/10 text-critical hover:bg-critical/20",
-        link: "text-accent underline-offset-4 hover:underline",
+        destructive: "border-[1.5px] border-critical/50 bg-transparent text-critical hover:bg-critical/[0.06]",
+        brand: "bg-brand text-white hover:brightness-95",
+        link: "rounded-none px-0 text-text underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-7 px-2.5 text-caption [&_svg]:size-3.5",
-        md: "h-8 px-3 text-caption [&_svg]:size-4",
-        lg: "h-10 px-4 text-body [&_svg]:size-4",
-        icon: "h-8 w-8 [&_svg]:size-4",
-        "icon-sm": "h-7 w-7 [&_svg]:size-3.5",
+        sm: "h-8 px-3.5 text-caption [&_svg]:size-3.5",
+        md: "h-10 px-[18px] text-caption [&_svg]:size-4",
+        lg: "h-11 px-[22px] text-body [&_svg]:size-4",
+        icon: "size-10 [&_svg]:size-[18px]",
+        "icon-sm": "size-8 [&_svg]:size-4",
       },
     },
+    compoundVariants: [
+      { variant: "secondary", size: ["icon", "icon-sm"], className: "border border-line bg-surface hover:bg-surface-2" },
+      { variant: "ghost", size: ["icon", "icon-sm"], className: "text-text" },
+    ],
     defaultVariants: { variant: "secondary", size: "md" },
   },
 );

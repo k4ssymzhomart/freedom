@@ -39,24 +39,24 @@ export default function SettingsPage() {
     }
   };
 
-  if (settings.isLoading) return <LoadingBlock rows={8} className="p-6" />;
-  if (settings.error) return <ErrorState error={settings.error} onRetry={() => settings.refetch()} className="m-6" />;
+  if (settings.isLoading) return <LoadingBlock rows={8} className="px-8 py-7" />;
+  if (settings.error) return <ErrorState error={settings.error} onRetry={() => settings.refetch()} className="mx-8 my-7" />;
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-6 px-8 py-7">
       <PageHeader
         title={t("settings.title")}
         subtitle={t("settings.subtitle")}
         actions={
-          <Button variant="primary" onClick={submit} loading={save.isPending} disabled={!dirty}>
+          <Button variant="primary" size="lg" onClick={submit} loading={save.isPending} disabled={!dirty}>
             {t("common.save")}
           </Button>
         }
       />
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_380px]">
+        <div className="flex flex-col gap-6">
           <Section title={t("settings.judge")}>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Field label={t("settings.defaultProvider")}>
                 <Select value={form.default_provider ?? "anthropic"} onValueChange={(v) => set("default_provider", v)}>
                   <SelectTrigger>
@@ -105,7 +105,7 @@ export default function SettingsPage() {
           </Section>
 
           <Section title={t("settings.local")}>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <Field label={t("settings.localEndpoint")}>
                 <Input value={form.local_endpoint ?? ""} onChange={(e) => set("local_endpoint", e.target.value || null)} placeholder="http://localhost:11434/v1" className="font-mono" />
               </Field>
@@ -116,12 +116,12 @@ export default function SettingsPage() {
           </Section>
 
           <Section title={t("settings.privacy")}>
-            <div className="flex flex-col gap-3">
-              <label className="flex items-center justify-between gap-4 text-caption">
+            <div className="flex flex-col">
+              <label className="flex items-center justify-between gap-4 border-b border-line py-3 text-body">
                 <span>{t("settings.piiMasking")}</span>
                 <Switch checked={!!form.pii_masking} onCheckedChange={(v) => set("pii_masking", v)} />
               </label>
-              <label className="flex items-center justify-between gap-4 text-caption">
+              <label className="flex items-center justify-between gap-4 pt-3 text-body">
                 <span>
                   {t("settings.fewshot")}
                   {settings.data?.fewshot_count != null ? <span className="ml-2 text-text-2">({t("settings.fewshotCount", { count: settings.data.fewshot_count })})</span> : null}
@@ -132,7 +132,7 @@ export default function SettingsPage() {
           </Section>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <Section
             title={t("settings.health")}
             right={
@@ -140,7 +140,7 @@ export default function SettingsPage() {
                 <RefreshCw /> {t("settings.reload")}
               </Button>
             }
-            bodyClassName="px-4 py-2"
+            bodyClassName="px-5 pb-3"
           >
             <KeyValue k={t("settings.api")} v={<Status ok={!!health.data?.ok} label={health.data?.ok ? t("settings.ok") : t("settings.down")} />} />
             <KeyValue k="URL" v={<span className="font-mono text-[11px] text-text-2">{apiBase() || window.location.origin}</span>} />
@@ -152,14 +152,14 @@ export default function SettingsPage() {
             {health.error ? <ErrorState error={health.error} className="mt-2" /> : null}
           </Section>
           {settings.data?.cost_rates ? (
-            <Section title={t("settings.costRates")} bodyClassName="px-4 py-2">
+            <Section title={t("settings.costRates")} bodyClassName="px-5 pb-3">
               {Object.entries(settings.data.cost_rates).map(([m, r]) => (
                 <KeyValue key={m} k={<span className="font-mono">{m}</span>} v={<span className="font-mono">{(r as number[]).map((x) => `$${x}`).join(" / ")}</span>} />
               ))}
             </Section>
           ) : null}
           {settings.data?.ensemble_members?.length ? (
-            <Section title={t("provider.ensemble")} bodyClassName="px-4 py-2">
+            <Section title={t("provider.ensemble")} bodyClassName="px-5 pb-3">
               {settings.data.ensemble_members.map((m, i) => (
                 <KeyValue key={i} k={m.provider} v={<span className="font-mono">{m.model}</span>} />
               ))}

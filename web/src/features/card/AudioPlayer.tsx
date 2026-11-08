@@ -60,7 +60,7 @@ export const AudioPlayer = React.forwardRef<AudioHandle, { conversationId: strin
   const pct = duration ? (time / duration) * 100 : 0;
 
   return (
-    <div className="border-b border-line px-3 py-2">
+    <div className="px-5 pb-3">
       <audio
         ref={audio}
         src={apiUrl(`/api/audio/${encodeURIComponent(conversationId)}`)}
@@ -71,33 +71,33 @@ export const AudioPlayer = React.forwardRef<AudioHandle, { conversationId: strin
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || duration)}
         onError={() => setError(true)}
       />
-      <div className="flex items-center gap-2">
-        <Button variant={playing ? "secondary" : "primary"} size="icon" onClick={toggle} aria-label={t("card.audio.player")} disabled={error}>
+      <div className="flex items-center gap-3 rounded-full bg-surface-2 p-1.5 pr-2">
+        <Button variant="primary" size="icon" onClick={toggle} aria-label={t("card.audio.player")} disabled={error}>
           {playing ? <Pause /> : <Play />}
         </Button>
         <div className="num w-[92px] shrink-0 font-mono text-[12px] text-text-2">
           {fmtSeconds(time)} / {fmtSeconds(duration)}
         </div>
         <div className="group relative h-6 flex-1 cursor-pointer" onClick={onBarClick} title={t("card.audio.player")}>
-          <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-surface-2" />
+          <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-surface" />
           {(features?.long_pauses ?? []).map((p, i) =>
             duration ? (
-              <div key={`p${i}`} className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-warning/50" style={{ left: `${(p.start / duration) * 100}%`, width: `${Math.max(0.5, ((p.end - p.start) / duration) * 100)}%` }} title={`${fmtSeconds(p.start)}–${fmtSeconds(p.end)}`} />
+              <div key={`p${i}`} className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-dot-warn/70" style={{ left: `${(p.start / duration) * 100}%`, width: `${Math.max(0.5, ((p.end - p.start) / duration) * 100)}%` }} title={`${fmtSeconds(p.start)}–${fmtSeconds(p.end)}`} />
             ) : null,
           )}
           {(features?.hold_segments ?? []).map((p, i) =>
             duration ? (
-              <div key={`h${i}`} className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-info/50" style={{ left: `${(p.start / duration) * 100}%`, width: `${Math.max(0.5, ((p.end - p.start) / duration) * 100)}%` }} />
+              <div key={`h${i}`} className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-dot-info/50" style={{ left: `${(p.start / duration) * 100}%`, width: `${Math.max(0.5, ((p.end - p.start) / duration) * 100)}%` }} />
             ) : null,
           )}
           <div className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-accent" style={{ width: `${pct}%` }} />
           {markers.map((m, i) =>
-            duration ? <div key={`m${i}`} className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-accent/80" style={{ left: `${(m / duration) * 100}%` }} /> : null,
+            duration ? <div key={`m${i}`} className="absolute top-1/2 h-3 w-[3px] -translate-y-1/2 rounded-full bg-brand" style={{ left: `${(m / duration) * 100}%` }} /> : null,
           )}
-          <div className={cn("absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-bg bg-accent shadow", !duration && "hidden")} style={{ left: `${pct}%` }} />
+          <div className={cn("absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-accent shadow", !duration && "hidden")} style={{ left: `${pct}%` }} />
         </div>
         <Select value={speed} onValueChange={setSpeed}>
-          <SelectTrigger className="w-[72px]" aria-label={t("card.audio.speed")}>
+          <SelectTrigger className="h-9 w-[78px] bg-surface" aria-label={t("card.audio.speed")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -111,7 +111,7 @@ export const AudioPlayer = React.forwardRef<AudioHandle, { conversationId: strin
       </div>
       {error ? <div className="mt-1 text-[11px] text-critical">{t("card.audio.noAudio")}</div> : null}
       {features ? (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
           {features.summary_ru ? <Badge variant="accent">{features.summary_ru}</Badge> : null}
           {features.operator_wpm != null ? (
             <Badge variant="mono">

@@ -101,7 +101,7 @@ function Row({ tone, code, label, rejudge }: { tone: "success" | "critical" | "i
   const { t } = useTranslation();
   const bar = tone === "success" ? "bg-success" : tone === "critical" ? "bg-critical" : tone === "warning" ? "bg-warning" : "bg-info";
   return (
-    <div className="flex items-center gap-3 rounded-sm border border-line px-3 py-2 text-caption">
+    <div className="flex items-center gap-3 rounded-[14px] bg-bg px-4 py-3 text-caption">
       <span className={`h-5 w-1 rounded-full ${bar}`} />
       <span className="w-16 font-mono font-semibold">{code}</span>
       <span className="flex-1 text-text-2">{label}</span>

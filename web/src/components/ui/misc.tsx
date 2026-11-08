@@ -11,9 +11,9 @@ const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & { tone?: "accent" | "warning" | "critical" }
 >(({ className, value, tone = "accent", ...props }, ref) => (
-  <ProgressPrimitive.Root ref={ref} className={cn("relative h-1.5 w-full overflow-hidden rounded-full bg-surface-2", className)} {...props}>
+  <ProgressPrimitive.Root ref={ref} className={cn("relative h-2 w-full overflow-hidden rounded-full bg-surface-2", className)} {...props}>
     <ProgressPrimitive.Indicator
-      className={cn("h-full w-full flex-1 rounded-full transition-transform duration-500", tone === "accent" ? "bg-accent" : tone === "warning" ? "bg-warning" : "bg-critical")}
+      className={cn("h-full w-full flex-1 rounded-full transition-transform duration-500", tone === "accent" ? "bg-dot-ok" : tone === "warning" ? "bg-dot-warn" : "bg-dot-flag")}
       style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
     />
   </ProgressPrimitive.Root>
@@ -30,7 +30,7 @@ const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive
       <TooltipPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
-        className={cn("z-50 max-w-xs rounded-sm border border-line bg-surface px-2.5 py-1.5 text-caption text-text shadow-float animate-in fade-in-0 zoom-in-95", className)}
+        className={cn("z-50 max-w-xs rounded-[10px] bg-accent px-3 py-1.5 text-[12px] font-medium text-accent-fg shadow-float animate-in fade-in-0 zoom-in-95", className)}
         {...props}
       />
     </TooltipPrimitive.Portal>
@@ -78,7 +78,7 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
         ref={ref}
         align={align}
         sideOffset={sideOffset}
-        className={cn("z-50 w-72 rounded-md border border-line bg-surface p-3 text-text shadow-float outline-none animate-in fade-in-0 zoom-in-95", className)}
+        className={cn("z-50 w-72 rounded-md bg-surface p-4 text-text shadow-float outline-none animate-in fade-in-0 zoom-in-95", className)}
         {...props}
       />
     </PopoverPrimitive.Portal>
@@ -88,7 +88,7 @@ PopoverContent.displayName = "PopoverContent";
 
 /* Skeleton */
 function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("animate-pulse-soft rounded-sm bg-surface-2", className)} {...props} />;
+  return <div className={cn("animate-pulse-soft rounded-md bg-surface-2", className)} {...props} />;
 }
 
 export { Progress, Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, Hint, Separator, Collapsible, CollapsibleTrigger, CollapsibleContent, Popover, PopoverTrigger, PopoverContent, Skeleton };
