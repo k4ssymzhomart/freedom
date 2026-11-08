@@ -1,13 +1,21 @@
-# CQA · Conversation Quality Analytics for Freedom Broker
+# CQA — Conversation Quality Analytics for Freedom Broker
 
-Prototype built for the Freedom Broker CQA hackathon: an LLM judge scores support dialogs (RU / KZ / EN chats and RU voice calls) against an editable, versioned checklist, shows per-criterion answers, points, weights, explanations and evidence turns, supports appeals and reviewer decisions with recalculated totals, and proves every verdict with a full trace.
+**Team: «Я Тебя Могну»** · Freedom Broker CQA hackathon, November 2026
 
-**Live demo:** https://cqa-freedom-pi.vercel.app (no login; DEV set already evaluated). API: https://api-production-58ab4.up.railway.app (Swagger at `/docs`). Local run below.
+CQA scores how a support operator handled a conversation against the company checklist. It reads a chat or a call transcript (RU / KZ / EN), answers each of the eight criteria, backs every answer with a quoted turn, computes the final score exactly by the organizers' rules, and lets anyone contest a criterion. Every verdict is reproducible: the model, prompt version, request, response, tokens and cost are stored with it.
+
+| | |
+|---|---|
+| **Live demo (no login)** | https://cqa-freedom-pi.vercel.app |
+| **API and Swagger** | https://api-production-58ab4.up.railway.app/docs |
+| **Control-set results** | [`results/prod/results.json`](results/prod/results.json) (FBroker, 10 chats, organizer format JSON 1.0) |
+| **DEV results** | [`results/dev/results.json`](results/dev/results.json) (65 dialogs) |
+| **Judge accuracy** | [`docs/eval/ACCURACY.md`](docs/eval/ACCURACY.md), [`api/judge_config_control.md`](api/judge_config_control.md) |
 
 ## Run it in three commands
 
 ```bash
-cp .env.example .env    # add ANTHROPIC_API_KEY and the organizer URL
+cp .env.example .env    # set ORGANIZER_API_URL (the organizers' GET link without group_id) and the judge: a model API key or a local model
 ```
 ```bash
 docker compose up --build
@@ -16,54 +24,91 @@ docker compose up --build
 open http://localhost:5173
 ```
 
-Then press **Import** on the Conversations screen with group id `DEV` (or the control group id), pick the checklist and press **Evaluate**.
+The API listens on `http://localhost:8000` (Swagger at `/docs`), the web app on `5173`. In the app: **Import** → `group_id` (`DEV`, `FBroker`) → **Evaluate**. A minute later every dialog has a card with scores and justifications.
 
-Without Docker: `cd api && uv sync && uv run uvicorn cqa.main:app --reload` (API on 8000) and `cd web && pnpm install && pnpm dev` (UI on 5173).
+Without Docker:
 
-## Results files (organizer JSON 1.0)
-
-- `results/dev/results.json` covers the 65 DEV dialogs; `results/prod/results.json` covers the 10 control chats and is written by the control run.
-- Build or validate any time:
-  ```bash
-  cd api && .venv/bin/python -m cqa.export.results_json --api https://api-production-58ab4.up.railway.app --group DEV --out ../results/dev/results.json --expect 65
-  ```
-  ```bash
-  cd api && .venv/bin/python -m cqa.export.results_json --validate ../results/prod/results.json --expect 10
-  ```
-- Control hour, one command (snapshot, import, dry-run guard check, evaluate, resume after a restart, retry, export, validate, commit, push; runbook in `docs/ARCHITECTURE_V2.md` §10):
-  ```bash
-  api/.venv/bin/python scripts/control_run.py --group <CONTROL_GROUP_ID>
-  ```
-- API: `GET /api/export/results.json?group_id=DEV` returns the same file; `GET /api/export/results/validate?group_id=...&expect=10` returns the validation report.
-
-## What it does
-
-- **Import** by organizer `group_id`, JSON upload, or pasted transcript. Bot and system turns are kept as context; the operator segment, duplicates, recording pauses and terminal events are detected automatically.
-- **Checklist Studio**: criteria with Да/Нет or scale answers, weights, N/A rules, gross-error flag, channel overrides for calls; every save is a new version; a diff tells which criteria need re-judging; **partial re-evaluation** re-judges only those.
-- **Judge**: one structured call per criterion (transcript first, compiled decision procedure second), evidence validated against the transcript, hard N/A rules from the checklist, deterministic scoring with N/A weight redistribution and two-decimal rounding exactly as the organizer PDF specifies.
-- **Providers**: Claude Opus 5.5 (default), Claude Sonnet 5.5, a local open model through any OpenAI-compatible endpoint (vLLM / Ollama), and an **ensemble** mode with cross-model voting and an arbiter.
-- **Trace**: model, prompt version hash, request, response, tokens, cost and latency for every call.
-- **Appeals**: analyst disputes a criterion, reviewer confirms or changes it with a reason, totals are recalculated, and accepted decisions become few-shot examples for the judge.
-- **Calls**: audio is resolved from the organizer player page, cached and streamed with seeking; acoustic features (pace, pauses, talk ratio, holds) feed criterion 6.
-- **Analytics and export**: distributions, criterion heatmap, operator leaderboard, AI-vs-reviewer agreement, cost per provider; CSV of all per-criterion answers and totals; PDF card.
-- **Dynamics 365 ready**: the web app builds to a single HTML file, has an embed mode (`?embed=1&conversation=<id>`), uses hash routing and no auth; `POST /api/integrations/dynamics/transcripts` takes Omnichannel transcripts pushed by Power Automate (admin guide: `docs/INTEGRATION_D365.md`).
-- **Enterprise layer**: nine roles with a permission matrix and an audit trail of every write (`X-CQA-Role` / `X-CQA-User` headers, `/api/roles`, `/api/audit`), daily budget and concurrency guards, restart recovery with job resume, database snapshots with one-click restore, executive overview and operator scorecards, gold-label calibration with AI-vs-human agreement, deep health, metrics and request ids. System as built: [docs/ARCHITECTURE_V2.md](docs/ARCHITECTURE_V2.md).
-
-## Model and cost
-
-Default judge: `claude-opus-5-5` with adaptive thinking, effort `high`, structured outputs. Measured on DEV: about **$0.20 per chat** (8 calls, ~12k input and ~7.5k output tokens, 20 s wall time) and about $0.40 per voice call. Sonnet 5.5 is about half; the local model is free. Ensemble (Opus + Sonnet + arbiter) is about 2.5× a single Opus run. Actual cost per evaluation is computed from token usage and shown on every card.
-
-## Repository
-
+```bash
+cd api && uv sync --extra dev && uv run uvicorn cqa.main:app --reload
 ```
-api/      FastAPI service: ingest, checklist versions, scoring engine, judge, jobs, audio, review, analytics, export
-web/      Vite + React UI (RU/EN/KK), single-file build for Dynamics 365
-docs/     ARCHITECTURE_V2.md (as built) · ARCHITECTURE.md (design) · API.md · ARCH_CONTRACTS.md · arch/ · PLAN.md · ML_BRIEF.md · DATASET_NOTES.md · knowledge/
-api/seeds Organizer checklist (v1) and compiled judge specs, claims ledger
+```bash
+cd web && pnpm install && pnpm dev
 ```
 
-Tests: `cd api && uv run --extra dev pytest -q` (968 tests, offline: the `fake` judge replaces Claude; includes an end-to-end process test). CI: `.github/workflows/ci.yml`.
+No cloud key is needed: point `.env` at any OpenAI-compatible model server (`LOCAL_ENDPOINT=http://localhost:11434/v1`, `LOCAL_MODEL=qwen3:8b` for Ollama) and the judge runs fully on-prem. See "Cloud or on-prem" below.
 
-## Team
+## Five minutes with the jury
 
-Product, frontend, pitch: Kassymzhomart Shubay. ML judge and calibration: teammate. Built with Claude Code.
+1. **A dialog and its card.** The list of 65 DEV dialogs with the final score, the gross-violation badge, the provider and the cost. Open `p1-ru-029`: the ring shows **51.25 / 100**, the banner says «Оскорбление клиента» with the quote «Вы вообще читать умеете?». Each criterion shows the answer, points, weight, a justification in the checklist's own style and a jump to the evidence turn.
+2. **N/A.** In the same dialog «Идентификация» is N/A with the reason: a navigation question, no account data disclosed. Its weight is redistributed over the applicable criteria.
+3. **Appeal.** The Operator role sees its own dialogs and contests a criterion with a comment; the Reviewer role sees the disputed score, the comment and the fragment, and confirms or changes it with a reason. The total is recomputed at once; the card keeps the original score, the decision and the final result.
+4. **Checklist.** Checklist Studio: add a criterion, change its wording, weight, answer type or N/A rule; every save is a new version; the diff shows which criteria need re-judging, and **partial re-evaluation** re-judges only those.
+5. **Gross violations.** A dedicated screen with every dialog where an insult, a paid service bypassing the company or a disclosure without identification was found: type, explanation and quote.
+
+Timed script with fallbacks: [`docs/DEMO.md`](docs/DEMO.md).
+
+## How the score is computed
+
+The organizers' checklist is loaded as is ([`api/seeds/checklist_freedom_v1.json`](api/seeds/checklist_freedom_v1.json)): eight criteria, weights 10 / 15 / 20 / 20 / 15 / 15 / 5, scales 0–20 and 0–10, the N/A conditions from page 1, gross errors as a separate flag without points.
+
+- **Judge.** One structured model call per criterion: first the transcript with its segments marked (before the operator, operator, internal consultation, after the end), then the criterion with a compiled decision procedure. The answer is validated: quotes are matched against the transcript, N/A is accepted only where the checklist allows it, a «Нет» needs an evidence turn or the span where the action was expected.
+- **Score.** Deterministic, no model involved: «Да» gives the full weight, scale steps are converted proportionally, the weights of N/A criteria are redistributed over the applicable ones, the total is rounded half-up to two decimals (50.625 → 50.63). A gross error does not change the total and is flagged separately.
+- **The organizers' answers** are built in as rules: a polite goodbye without a summary or an offer of help is N/A for «Завершение» (switch `c7_bare_farewell_policy` in Settings); data that sufficed from the start is N/A for «Выявление потребности»; a call whose greeting the recording missed gets no penalty on «Установление контакта».
+- **Reference facts.** The operator's statements about menu paths, deadlines and fees are checked against the company fact base ([`api/seeds/claims_ledger.json`](api/seeds/claims_ledger.json), [`docs/knowledge/`](docs/knowledge/)); deviations are flagged, nothing is invented.
+
+## Accuracy
+
+Two independent gold sets on the 60 DEV chats, three labelers each, who read only the checklist and the organizers' answers and never saw our judge. The two gold sets agree with each other on 95.6 % of the cells.
+
+| | Per-criterion agreement |
+|---|---|
+| Judge before calibration on the organizers' answers | 84.6 % |
+| Judge now, against gold set 1 / gold set 2 | **95.0 % / 95.2 %** |
+| Cloud ensemble (two models and an arbiter), control-run rehearsal | 98.8 % |
+| Local model qwen3.8-27B vs the cloud model, 24 held-out chats | 96.9 % vs 98.4 % |
+
+Mean absolute error of the final score against the gold totals: **2.9 points**, 43 of 60 totals exact. Two runs of the same judge differ on about 2 of 60 cells of the scale criteria, which is why the control set is judged by an ensemble. Method, decision log and every label: [`docs/eval/ACCURACY.md`](docs/eval/ACCURACY.md), [`api/eval/decisions.md`](api/eval/decisions.md), [`api/eval/gold.json`](api/eval/gold.json).
+
+## The control set
+
+`results/prod/results.json` holds the 10 chats of the **FBroker** set, judged on the frozen code and specs: a cloud ensemble of two models with an arbiter, checklist v1, 48 seconds. 10 records `ok`, two gross-violation flags. The **Swap** set is saved (the cached organizer response and an import into the hosted database); it will be evaluated on the organizers' additional instruction.
+
+Validate the file, or rebuild it:
+
+```bash
+cd api && uv run python -m cqa.export.results_json --validate ../results/prod/results.json --expect 10
+```
+```bash
+cd api && uv run python -m cqa.export.results_json --api https://api-production-58ab4.up.railway.app --group FBroker --out ../results/prod/results.json --expect 10
+```
+
+The control hour in one command (import, evaluate, retry failures, export, validate, commit, push): `api/.venv/bin/python scripts/control_run.py --group <GROUP_ID> --provider ensemble`. The same set on the local model, next to the official run and without any cloud call: `scripts/control_local.py`.
+
+## Cloud or on-prem
+
+The judge is model-agnostic; the provider is switched in Settings without a redeploy:
+
+- **Local open model** through any OpenAI-compatible server (vLLM, Ollama). At the hackathon: qwen3.8-27B (Q4) on a university server with two NVIDIA A10, $0, about 2 minutes per chat with three requests in flight, accuracy on a par with the cloud model (table above). Data never leaves the perimeter. Setup and access: [`api/local/GPU_SERVER.md`](api/local/GPU_SERVER.md).
+- **Cloud model** (the paid option the organizers ask us to name: Anthropic Claude Opus 5.5, Sonnet 5.5 as the second voice): about **$0.20 and 20 s per chat**, about $0.40 per call; the ensemble with an arbiter is 3–4× that ($0.80 per chat on the control set). PII is masked before anything is sent to the cloud; the cost of each evaluation is computed from the tokens and shown on the card. A switch in `.env` guarantees that no request leaves for the cloud.
+- **Ensemble**: several models vote, an arbiter decides on disagreement; the local model can be one of the voices.
+
+## Architecture
+
+```
+web/        React + Vite (RU / EN / KK), single-file build and embed mode for Dynamics 365
+api/        FastAPI: import → normalization → judge → validation → scoring → appeals → analytics → export
+api/seeds/  the organizers' checklist (v1), the judge's decision procedures, the fact base
+api/eval/   gold labels (65 dialogs), labeling protocol, decision log, harness runs
+docs/       architecture, API contract, demo script, hosting, accuracy reports
+scripts/    control run (cloud and local model), smoke checks, demo data
+results/    results.json for DEV and for the control set
+```
+
+Storage: SQLite (or Postgres via `DATABASE_URL`); every model call is kept in a trace table. Hosting: API on Railway, web app on Vercel; the same stack runs locally with `docker compose`. Roles (analyst, reviewer, operator, manager and others) with a permission matrix and an audit trail, a daily spend cap, database snapshots, a Dynamics 365 integration (`POST /api/integrations/dynamics/transcripts`). As built: [`docs/ARCHITECTURE_V2.md`](docs/ARCHITECTURE_V2.md); API contract: [`docs/API.md`](docs/API.md).
+
+Tests: `cd api && uv run --extra dev pytest -q` — about 1,300 tests, offline (a deterministic fake provider replaces the model). CI: `.github/workflows/ci.yml`.
+
+## Team «Я Тебя Могну»
+
+- **Kassymzhomart Shubay** — product, architecture, frontend, hosting, presentation.
+- **Alnur Kengesbay** — ML: judge calibration, gold labeling, the local model and the on-prem path.
