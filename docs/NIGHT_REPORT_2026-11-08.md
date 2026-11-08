@@ -2,6 +2,13 @@
 
 For the team's morning sync. Everything below is on `main` and deployed (hosted build **56cde81**; later commits change only docs).
 
+## Update 11:15: Claude credit exhausted, the judge is now Qwen 27B
+
+- **Setup:** PR #2 is merged. Hosted (bd68cf4) judges with `qwen3.8:27b` on the team's GPU server. `CLAUDE_ENABLED=false` means nothing can route to Claude by accident.
+- **Rehearsal on hosted:** 10 DEV chats in 28,5 min, VALID. Qwen matches Claude's values on **80 of 80 cells**: 98,8% / 97,5% against the two gold sets, the same as Claude.
+- **13:00 command:** `api/.venv/bin/python scripts/control_run.py --group <ID> --provider local --deadline 13:57` (`docs/DEMO.md`). A pasted dialog now takes about 3 minutes.
+- **Production:** web https://cqa-freedom-pi.vercel.app, API https://api-production-58ab4.up.railway.app. Anyone can open it. Readiness, smoke 18/18 and asks 7/7 are green.
+
 ## TL;DR (05:10)
 
 - **Ready for 13:00.**

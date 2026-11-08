@@ -1,5 +1,11 @@
 # Judge configuration for the control run
 
+> **2026-11-08 11:15 (architecture side): the Claude credit is exhausted, and the control run uses the local Qwen 27B.**
+> - Command: `api/.venv/bin/python scripts/control_run.py --group <ID> --provider local --deadline 13:57`.
+> - Hosted has `LOCAL_ENDPOINT` set; keep it set. `CLAUDE_ENABLED=false` refuses anthropic and ensemble.
+> - Do not start `control_local.py` in parallel; it is the fallback only.
+> - The ensemble rows below are history; the runbook is in `docs/DEMO.md`.
+
 Frozen by the ML owner on top of `main` at 876c1de. Evidence: two independent AI-panel gold sets (`api/eval/gold.json`, 65 dialogs; `api/eval/gold_ai_panel.json`, 60 chats), the decision log `api/eval/decisions.md`, the harness runs in `api/eval/runs.csv` and `docs/eval/ACCURACY.md`.
 
 > **Update 2026-11-08, about 04:40 +05 (architecture side).**

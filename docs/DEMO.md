@@ -84,7 +84,7 @@ If behind schedule, drop step 8 first, then step 7.
   - Chips: insult 1, paid bypass 4, disclosure 3.
   - Each row has the rule («Почему так классифицировано»), the quote and turn, and «Перейти к фрагменту».
   - CSV: `GET /api/export/violations.csv`.
-- **Dialog result:** any card. Paste a new dialog the jury hands over, then «Создать и оценить»; the card appears in about 20 s.
+- **Dialog result:** any card. Paste a new dialog the jury hands over, then «Создать и оценить». With Qwen the card appears in **about 3 minutes** (8 criteria, 3 in parallel on the GPU), not 20 s: say so while it runs and walk through another card meanwhile.
   - Pasting under an existing id is refused with «Сохранить как копию» or «Заменить», never a silent overwrite.
 
 ## Hands-on access
@@ -98,7 +98,11 @@ If behind schedule, drop step 8 first, then step 7.
 
 `scripts/control_run.py` runs import → dry-run guard → evaluate → resume after a restart → retry → export → validate → commit → push.
 - Rehearsal, free and with no git, against a local API (see `docs/ARCHITECTURE_V2.md` §10 step 4): `--api http://127.0.0.1:8019 --rehearse --provider fake`. Against the hosted instance `--rehearse` is refused unless `--allow-hosted-rehearsal` is added, because it re-evaluates 10 DEV cards there. The live-demo dialogs and dialogs with appeals are always skipped.
-- Real run: `api/.venv/bin/python scripts/control_run.py --group <CONTROL_GROUP_ID> --provider ensemble`. If the organizers hand over a URL or a file instead: `--source-url` / `--source-file`.
+- **Real run (since 2026-11-08 10:20 the Claude credit is exhausted; the judge is Qwen 27B on the team's GPU server):** `api/.venv/bin/python scripts/control_run.py --group <CONTROL_GROUP_ID> --provider local --deadline 13:57`. If the organizers hand over a URL or a file instead: `--source-url` / `--source-file`.
+  - Rehearsed on hosted at 10:32: 10 DEV chats in 28,5 min. The values match Claude on 80 of 80 cells: 98,8% panel gold and 97,5% ML gold, the same as Claude.
+  - `--deadline 13:57` follows the job until 13:53, cancels it if needed, skips the retry when time is short, and always exports, validates and pushes before the stop-code. Do not run `control_local.py` at the same time: it would halve the GPU throughput.
+  - Fallback if the hosted API cannot reach the GPU: `caffeinate -i api/.venv/bin/python scripts/control_local.py --group <CONTROL_GROUP_ID> --endpoint <LOCAL_ENDPOINT from .env>`. It writes `api/data/control_local/results_control.json`; copy it to `results/prod/results.json`, then commit and push it by hand.
+  - The Claude ensemble lines below are history: Claude is switched off on hosted (`CLAUDE_ENABLED=false`).
   - Both fallbacks were rehearsed at 05:04 with the offline judge on a scratch API, using a 3-chat file in the organizer format (RU/KZ/EN under new ids): upload, evaluation, export and validation all passed, VALID in 4 s.
   - Command: `--api <scratch> --source-file <file> --provider fake --no-git --no-snapshot --out <scratch>/results.json --expect 3`.
   - Ensemble (Opus ×2 + Sonnet, arbiter on disagreement), measured on 08.11 against the AI-panel gold: +1,5 points over single Opus on the noisy criteria (C2/C4/C5/C6/C7), with less run-to-run variance.
