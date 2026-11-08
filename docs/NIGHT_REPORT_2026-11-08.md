@@ -2,6 +2,13 @@
 
 For the team's morning sync. Everything below is on `main` and deployed (hosted build **56cde81**; later commits change only docs).
 
+## Update 11:20: the control set is done
+
+- **Published:** `results/prod/results.json` is on `main` (PR #3, merged 11:15). It holds control set **FBroker**, 10 chats (4 RU, 4 KZ, 2 EN), judged by the Claude ensemble (Opus ×2 + Sonnet with the arbiter) on the ML teammate's key: 10/10 ok, 2 critical.
+- **Validated:** 0 errors and 0 warnings; the ids exactly match the organizer dataset FBroker on hosted.
+- **Jury view:** hosted is evaluating the same 10 chats with the on-prem Qwen 27B (job j_68cdc35ad5d7, about 28 min). The cards show it, and the agreement with the cloud file is the on-prem vs cloud figure. `results/prod` is never touched by that run.
+- **Swap dataset:** imported and left unevaluated, as the organizers asked.
+
 ## Update 11:15: Claude credit exhausted, the judge is now Qwen 27B
 
 - **Setup:** PR #2 is merged. Hosted (bd68cf4) judges with `qwen3.8:27b` on the team's GPU server. `CLAUDE_ENABLED=false` means nothing can route to Claude by accident.

@@ -98,6 +98,7 @@ If behind schedule, drop step 8 first, then step 7.
 
 `scripts/control_run.py` runs import → dry-run guard → evaluate → resume after a restart → retry → export → validate → commit → push.
 - Rehearsal, free and with no git, against a local API (see `docs/ARCHITECTURE_V2.md` §10 step 4): `--api http://127.0.0.1:8019 --rehearse --provider fake`. Against the hosted instance `--rehearse` is refused unless `--allow-hosted-rehearsal` is added, because it re-evaluates 10 DEV cards there. The live-demo dialogs and dialogs with appeals are always skipped.
+- **Done 11:15:** control set FBroker, `results/prod/results.json` (PR #3, Claude ensemble on the ML teammate's key), VALID. Only if the organizers announce another control set, use:
 - **Real run (since 2026-11-08 10:20 the Claude credit is exhausted; the judge is Qwen 27B on the team's GPU server):** `api/.venv/bin/python scripts/control_run.py --group <CONTROL_GROUP_ID> --provider local --deadline 13:57`. If the organizers hand over a URL or a file instead: `--source-url` / `--source-file`.
   - Rehearsed on hosted at 10:32: 10 DEV chats in 28,5 min. The values match Claude on 80 of 80 cells: 98,8% panel gold and 97,5% ML gold, the same as Claude.
   - `--deadline 13:57` follows the job until 13:53, cancels it if needed, skips the retry when time is short, and always exports, validates and pushes before the stop-code. Do not run `control_local.py` at the same time: it would halve the GPU throughput.
