@@ -20,8 +20,8 @@ export function TraceTab({ evaluation }: { evaluation: Evaluation | null }) {
   const latency = items.reduce((s, x) => s + (x.latency_ms ?? 0), 0);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="rounded-[14px] bg-surface px-4 py-2.5 text-caption text-text-2 ring-1 ring-line">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
+    <div className="flex flex-col divide-y divide-line">
+      <div className="pb-4 text-caption text-text-2">{t("card.trace.totals", { calls: items.length, tokens: tokens.toLocaleString(), cost: fmtMoney(cost, 3), latency: fmtMs(latency) })}</div>
       {items.map((x, i) => (
         <TraceCard key={x.id ?? i} x={x} votes={evaluation.criteria?.find((c) => c.code === x.criterion_code)?.votes ?? x.votes ?? null} />
       ))}
@@ -34,8 +34,8 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
   const req = x.request as { messages?: unknown; system_chars?: number } | null;
   const messages = req && typeof req === "object" && "messages" in req ? req.messages : x.request;
   return (
-    <div className="overflow-hidden rounded-md border border-line bg-surface">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3.5 text-caption">
+    <div className="py-5 last:pb-0">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pb-3 text-caption">
         <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{x.criterion_code}</span>
         <Badge variant={x.kind === "arbiter" ? "accent" : x.kind === "vote" ? "info" : "outline"}>{x.kind ?? "judge"}</Badge>
         <span className="text-text-2">{x.provider}</span>
@@ -56,12 +56,12 @@ function TraceCard({ x, votes }: { x: TraceEntry; votes: Vote[] | null }) {
           <span className="num">{fmtMs(x.latency_ms)}</span>
         </span>
       </div>
-      <div className="flex flex-col gap-2 px-5 pb-5">
-        {req?.system_chars ? <div className="font-mono text-[11px] text-text-2">system: {req.system_chars.toLocaleString()} chars</div> : null}
+      <div className="flex flex-col">
+        {req?.system_chars ? <div className="pb-2 font-mono text-[11px] text-text-2">system: {req.system_chars.toLocaleString()} chars</div> : null}
         <JsonView value={messages} title={t("card.trace.request")} />
         <JsonView value={x.response} title={t("card.trace.response")} />
         {votes?.length ? (
-          <div className="flex flex-wrap items-center gap-1.5 text-caption">
+          <div className="flex flex-wrap items-center gap-1.5 border-t border-line pt-3 text-caption">
             <span className="label">{t("card.votes")}</span>
             {votes.map((v, i) => (
               <Badge key={i} variant="mono">

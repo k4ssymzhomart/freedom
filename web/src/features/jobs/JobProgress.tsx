@@ -78,7 +78,7 @@ export function JobProgress({ jobId, onDone, onDismiss, compact }: { jobId: stri
         {state.lastConversation ? <span className="truncate font-mono text-[11px]">{state.lastConversation}</span> : null}
       </div>
       {showLog ? (
-        <pre className="mt-2 max-h-40 overflow-auto rounded-[12px] bg-bg px-3.5 py-2.5 font-mono text-[11px] leading-[17px] text-text-2">
+        <pre className="mt-3 max-h-40 overflow-auto border-t border-line pt-3 font-mono text-[11px] leading-[17px] text-text-2">
           {state.log.slice(-60).map((l, i) => (
             <div key={i} className={cn(l.level === "error" && "text-critical")}>
               <span className="opacity-50">{l.ts.slice(11, 19)}</span> {l.message}

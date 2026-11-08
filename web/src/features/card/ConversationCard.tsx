@@ -163,7 +163,7 @@ export function ConversationCard({ id, embed = false, onBack }: { id: string; em
                 <TabsTrigger value="audio">{t("card.tabs.audio")}</TabsTrigger>
               </TabsList>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto border-t border-line bg-bg/60 p-5">
+            <div className="min-h-0 flex-1 overflow-y-auto border-t border-line px-6 py-6">
               <TabsContent value="result">
                 {evaluation.isLoading ? (
                   <LoadingBlock rows={6} />
