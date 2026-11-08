@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """On-prem judge for the control set: the same pipeline with a local open model, next to the official cloud run.
 
-Runs on a laptop inside the university network. It never touches the hosted instance, git or the official results:
+Runs on a laptop inside the team's private network. It never touches the hosted instance, git or the official results:
 - its own database `api/data/control_local.db` and outputs in `api/data/control_local/` (both git-ignored);
 - the judge is the OpenAI-compatible local provider (Ollama on the GPU server, reached through an SSH tunnel);
 - the official file stays `results/prod/results.json` from `scripts/control_run.py` (ensemble on the hosted API).
 
 Usage, from the repository root (wrap long runs in `caffeinate -i` so the laptop does not sleep):
-  api/.venv/bin/python scripts/control_local.py --rehearse 2 --tunnel univer-gpu6      # 2 short DEV chats, end to end
-  caffeinate -i api/.venv/bin/python scripts/control_local.py --group <CONTROL_GROUP_ID> --tunnel univer-gpu6
+  api/.venv/bin/python scripts/control_local.py --rehearse 2 --tunnel <gpu-host>      # 2 short DEV chats, end to end
+  caffeinate -i api/.venv/bin/python scripts/control_local.py --group <CONTROL_GROUP_ID> --tunnel <gpu-host>
   api/.venv/bin/python scripts/control_local.py --source-url <URL>   |   --source-file <PATH>
   api/.venv/bin/python scripts/control_local.py --export-only         # rebuild the file from what is already judged
   api/.venv/bin/python scripts/control_local.py --compare-only        # agreement with the cloud file, no judging

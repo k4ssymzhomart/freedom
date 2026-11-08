@@ -277,7 +277,7 @@ Votes (if ensemble) are merged (§7.5), the scoring engine computes totals, and 
 |---|---|---|---|
 | `anthropic` | `claude-opus-5-5` | Primary judge | Structured outputs via `client.messages.parse` with a Pydantic schema; adaptive thinking; effort `high` for scoring, `medium` for extraction; server-side refusal fallback enabled |
 | `anthropic` | `claude-sonnet-5-5` | Second voice, dev iterations | Same schema; roughly half the cost |
-| `openai_compatible` | vLLM on the university GPU cluster serving `Qwen3-32B` (or `Qwen3-30B-A3B` for speed) | Local judge, the data-sovereignty option | OpenAI-compatible `/v1/chat/completions` with JSON schema response format; the ML teammate owns deployment; a tunnel exposes it to the API |
+| `openai_compatible` | vLLM on the the team's GPU cluster serving `Qwen3-32B` (or `Qwen3-30B-A3B` for speed) | Local judge, the data-sovereignty option | OpenAI-compatible `/v1/chat/completions` with JSON schema response format; the ML teammate owns deployment; a tunnel exposes it to the API |
 | `ollama` | `qwen3:8b` on the M4 | Fallback local judge | Same adapter as above (Ollama speaks the OpenAI-compatible API); weaker in KZ, flagged in UI |
 | `ensemble` | Opus + Sonnet (+ local) | Control run | Vote per criterion, arbiter on disagreement |
 
@@ -474,5 +474,5 @@ Repo hygiene: hackathon materials (PDF, video, Telegram notes, signed API URL) a
 1. Organizer checklist PDF: received and encoded (`api/seeds/checklist_freedom_v1.json`, §5).
 2. Product materials: none from the organizers; a public-web knowledge base is being compiled into `docs/knowledge/freedom_products.md` for the reference-fact layer.
 3. Hackathon started 2026-11-07; the phase clock in PLAN.md counts from that start.
-4. Claude API key: in `.env` (git-ignored). ML teammate has access to the university GPU cluster; brief in `docs/ML_BRIEF.md`.
+4. Claude API key: in `.env` (git-ignored). ML teammate has access to the the team's GPU cluster; brief in `docs/ML_BRIEF.md`.
 5. Hosting: both hosted (Vercel + Railway) and local Docker, §12. Design: Figma kit recolored, prompt in `docs/DESIGN_SYSTEM_PROMPT.md`.

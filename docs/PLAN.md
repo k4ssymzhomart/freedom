@@ -129,6 +129,6 @@ Story format: `ID · As a <role> I want <capability> so that <value>` with accep
 1. Organizer checklist: received, encoded in `api/seeds/checklist_freedom_v1.json`; expected DEV labels per criterion in DATASET_NOTES §7.
 2. Clock: started 2026-11-07; control set at H+23, stop-code at H+24.
 3. Claude API key: in `.env` (git-ignored). Opus 5.5 primary, Sonnet 5.5 secondary.
-4. ML teammate: brief in `docs/ML_BRIEF.md`; university GPU cluster available for vLLM with an open model as the local provider; Ollama on the M4 as fallback.
+4. ML teammate: brief in `docs/ML_BRIEF.md`; the team's GPU cluster available for vLLM with an open model as the local provider; Ollama on the M4 as fallback.
 5. Hosting: both. Hosted (Vercel web + Railway API) is what the jury opens; `docker compose up` reproduces it locally from the tagged commit.
 6. Design: Figma kit recolored to Freedom green with the mascot kept; prompt in `docs/DESIGN_SYSTEM_PROMPT.md`.

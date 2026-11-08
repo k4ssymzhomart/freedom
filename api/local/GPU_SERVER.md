@@ -1,6 +1,6 @@
-# The CQA judge model on the university GPU server
+# The CQA judge model on the team's GPU server
 
-Everything here runs as a normal user (no sudo) on the GPU server inside the university network: 2 × NVIDIA A10 (24 GB each),
+Everything here runs as a normal user (no sudo) on the GPU server inside the team's private network: 2 × NVIDIA A10 (24 GB each),
 shared with other people's research processes. Nothing of theirs is touched: own Ollama binary, own port, own model store.
 
 ## Layout (`~/cqa-ollama/`)
@@ -26,7 +26,7 @@ while other people's jobs run.
 
 ## Reaching it
 
-- **From a laptop in the university network** (the harness, `scripts/control_local.py`, a local API for a demo):
+- **From a laptop in the team's private network** (the harness, `scripts/control_local.py`, a local API for a demo):
   `ssh -f -N -L 11436:127.0.0.1:11436 <ssh host>` then `LOCAL_ENDPOINT=http://localhost:11436/v1 LOCAL_MODEL=qwen3.8:27b-q4_K_M LOCAL_MAX_PARALLEL=3`.
 - **From the internet (the hosted API on Railway):** `http://89.218.178.215:11437/v1`, through the token gate only. Ollama has
   no authentication, so the model server itself is never exposed. The path: Railway → `bestsrv:11437` (public, ufw rule

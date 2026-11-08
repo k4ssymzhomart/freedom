@@ -26,7 +26,7 @@ Frozen by the ML owner on top of `main` at 876c1de. Evidence: two independent AI
 | C1 on calls | no N/A; an opening outside the recording is credited by the system rule | Organizer answer 2026-11-08 (upstream). |
 | PII masking | on | The local provider keeps data on the machine and is not masked. |
 | Few-shots | none seeded | |
-| Local model | qwen3.8:27b (Q4_K_M) through Ollama on the university GPU server (2×A10, closed network), outside the control vote | On par with single Claude on the 8 validation dialogs, but 6–17 min per dialog: an on-prem option and a demo, not the control run. |
+| Local model | qwen3.8:27b (Q4_K_M) through Ollama on the team's GPU server (2×A10, closed network), outside the control vote | On par with single Claude on the 8 validation dialogs, but 6–17 min per dialog: an on-prem option and a demo, not the control run. |
 
 ## Accuracy of this configuration (single Opus 5.5, C7 policy N/A, fresh local run)
 
@@ -49,7 +49,7 @@ The two gold sets agree with each other on 95.6% of the shared chat labels; C4 (
 |---|---|---|---|
 | ensemble (Opus, Opus, Sonnet + arbiter) | 0.966 | 8 / 232 | $0.58 |
 | single Opus 5.5 | 0.962 | 9 / 232 | $0.24 |
-| local qwen3.8:27b Q4_K_M (Ollama, university server, 2×A10; 8 validation dialogs) | 0.859 (lenient 0.906) | 9 / 64 | $0, 6–17 min per dialog, one request at a time |
+| local qwen3.8:27b Q4_K_M (Ollama, dedicated GPU server, 2×A10; 8 validation dialogs) | 0.859 (lenient 0.906) | 9 / 64 | $0, 6–17 min per dialog, one request at a time |
 | single Opus 5.5, deployed specs, the same 8 dialogs | 0.844 (lenient 0.859) | 10 / 64 | $0.26 |
 | local qwen3:8b (Ollama, MacBook Pro M4, 16 GB; 8 validation dialogs) | 0.609 | 25 / 64 | $0, 15–20 min per dialog |
 
@@ -65,9 +65,9 @@ The ensemble comparison ran before the spec merge; the vote and the arbiter do n
 
 ## On-prem run of the control set (optional, next to the official run)
 
-The official file stays the ensemble on the hosted API. In parallel, the ML teammate judges the same control chats with the open model on the university GPU server, to show the on-prem architecture on new data (selection criterion: diversity of approaches, local LLM vs cloud). Nothing here touches the hosted instance, git or `results/prod/results.json`.
+The official file stays the ensemble on the hosted API. In parallel, the ML teammate judges the same control chats with the open model on the team's GPU server, to show the on-prem architecture on new data (selection criterion: diversity of approaches, local LLM vs cloud). Nothing here touches the hosted instance, git or `results/prod/results.json`.
 
-- **Where:** a laptop inside the university network (the GPU server is in a closed network) with this repository, `api/.venv` and `.env` (`ORGANIZER_API_URL` for `--group`).
+- **Where:** a laptop inside the team's private network (the GPU server is in a closed network) with this repository, `api/.venv` and `.env` (`ORGANIZER_API_URL` for `--group`).
 - **Before 13:00, warm up and check (≈ 12 min, 2 short DEV chats):** `api/.venv/bin/python scripts/control_local.py --rehearse 2 --tunnel <ssh host of the GPU server>`. Rehearsed 2026-11-08: 2 chats in 12.3 min, valid organizer-format file (`mode: local`), 100% agreement with the cloud verdicts on both.
 - **At 13:00:** `caffeinate -i api/.venv/bin/python scripts/control_local.py --group <CONTROL_GROUP_ID> --tunnel <ssh host>` (or `--source-url` / `--source-file`, the same inputs as `control_run.py`; `caffeinate` keeps the laptop awake). About 6–10 min per chat because the shared Ollama serves one request at a time: 60–100 min for 10 chats, shortest chats first.
 - **If it stops** (network, Ctrl-C, laptop moved): the file is exported after every dialog, so `api/data/control_local/results_control.json` is always current. Run the same command again to continue: the control set is cached, finished dialogs are skipped, a dialog with a failed criterion re-judges only that criterion, and a dropped tunnel is reopened (it waits up to 10 min for the network). `--export-only` rebuilds the file without judging. Only one run per database at a time (a lock file enforces it).
@@ -91,7 +91,7 @@ cd api && uv run python -m cqa.eval.harness --gold eval/gold.json --split holdou
 
 ## Run the local model
 
-On the university GPU server (Ollama already serves `qwen3.8:27b-q4_K_M` on its localhost; the server is in a closed network, so reach it through an SSH tunnel and run the API or the harness on a laptop inside that network):
+On the team's GPU server (Ollama already serves `qwen3.8:27b-q4_K_M` on its localhost; the server is in a closed network, so reach it through an SSH tunnel and run the API or the harness on a laptop inside that network):
 
 ```bash
 ssh -f -N -L 11435:127.0.0.1:11434 <user>@<gpu-server>
@@ -118,7 +118,7 @@ cd api && LOCAL_ENDPOINT=http://localhost:11434/v1 LOCAL_MODEL=qwen3-cqa uv run 
 
 ## Local model on the control set (2026-11-08, next to the official run)
 
-The same 10 FBroker chats were judged by the local open model (qwen3.8:27b Q4, Ollama on the university GPU server, 2 × A10, thinking off, no few-shots, deployed specs) with `scripts/control_local.py`: 10 of 10, 31 min, valid organizer file (`mode: local`), no cloud call. Against the official cloud ensemble file (`results/prod/results.json`):
+The same 10 FBroker chats were judged by the local open model (qwen3.8:27b Q4, Ollama on the team's GPU server, 2 × A10, thinking off, no few-shots, deployed specs) with `scripts/control_local.py`: 10 of 10, 31 min, valid organizer file (`mode: local`), no cloud call. Against the official cloud ensemble file (`results/prod/results.json`):
 
 | Criterion | contact | discovery | identification | consultation | empathy | dialogue | closure | critical | **mean** |
 |---|---|---|---|---|---|---|---|---|---|

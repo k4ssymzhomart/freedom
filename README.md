@@ -88,7 +88,7 @@ The control hour in one command (import, evaluate, retry failures, export, valid
 
 The judge is model-agnostic; the provider is switched in Settings without a redeploy:
 
-- **Local open model** through any OpenAI-compatible server (vLLM, Ollama). At the hackathon: qwen3.8-27B (Q4) on a university server with two NVIDIA A10, $0, about 2 minutes per chat with three requests in flight, accuracy on a par with the cloud model (table above). Data never leaves the perimeter. Setup and access: [`api/local/GPU_SERVER.md`](api/local/GPU_SERVER.md).
+- **Local open model** through any OpenAI-compatible server (vLLM, Ollama). At the hackathon: qwen3.8-27B (Q4) on a dedicated GPU server with two NVIDIA A10, $0, about 2 minutes per chat with three requests in flight, accuracy on a par with the cloud model (table above). Data never leaves the perimeter. Setup and access: [`api/local/GPU_SERVER.md`](api/local/GPU_SERVER.md).
 - **Cloud model** (the paid option the organizers ask us to name: Anthropic Claude Opus 5.5, Sonnet 5.5 as the second voice): about **$0.20 and 20 s per chat**, about $0.40 per call; the ensemble with an arbiter is 3–4× that ($0.80 per chat on the control set). PII is masked before anything is sent to the cloud; the cost of each evaluation is computed from the tokens and shown on the card. A switch in `.env` guarantees that no request leaves for the cloud.
 - **Ensemble**: several models vote, an arbiter decides on disagreement; the local model can be one of the voices.
 

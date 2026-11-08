@@ -11,7 +11,7 @@ For the ML teammate. You own everything under `api/cqa/judge/` and `api/eval/`. 
 | H+6 | Gold set started | Labeling protocol agreed, 20 dialogs assigned (10 RU incl. 2 calls, 5 KZ, 5 EN), both of us label independently |
 | H+10 | `eval/harness.py` | `python -m cqa.eval --gold eval/gold.json --provider anthropic --prompt v1` prints per-criterion exact match, MAE, quadratic-weighted kappa, total MAE, cost; appends to `eval/runs.csv` |
 | H+12 | Gold set reconciled | Disagreements resolved together; human-human agreement recorded as the ceiling |
-| H+14 | Local provider | vLLM on the university cluster serving an open model through an OpenAI-compatible endpoint, reachable from the API via a tunnel; `judge/providers/openai_compatible.py` passes the same harness |
+| H+14 | Local provider | vLLM on the team's GPU cluster serving an open model through an OpenAI-compatible endpoint, reachable from the API via a tunnel; `judge/providers/openai_compatible.py` passes the same harness |
 | H+18 | Ensemble + arbiter | Majority/median merge, arbiter on disagreement, votes stored; harness shows whether it beats single Opus on validation |
 | H+20 | Frozen control config | Provider mode, prompt version, effort, few-shot bank written to `judge/config/control.json` |
 | H+23 | Control run executed | You run it with me; verify 10 cards; export CSV |
