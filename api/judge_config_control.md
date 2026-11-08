@@ -115,3 +115,27 @@ cd api && LOCAL_ENDPOINT=http://localhost:11434/v1 LOCAL_MODEL=qwen3-cqa uv run 
 ```
 
 `local_max_parallel` (default 1) caps concurrent requests to the endpoint; raise it for vLLM on a GPU. `local_timeout_s` (default 900) is the per-request timeout.
+
+## Local model on the control set (2026-11-08, next to the official run)
+
+The same 10 FBroker chats were judged by the local open model (qwen3.8:27b Q4, Ollama on the university GPU server, 2 × A10, thinking off, no few-shots, deployed specs) with `scripts/control_local.py`: 10 of 10, 31 min, valid organizer file (`mode: local`), no cloud call. Against the official cloud ensemble file (`results/prod/results.json`):
+
+| Criterion | contact | discovery | identification | consultation | empathy | dialogue | closure | critical | **mean** |
+|---|---|---|---|---|---|---|---|---|---|
+| Agreement | 1.00 | 0.80 | 0.90 | 0.90 | 1.00 | 0.90 | 0.90 | 1.00 | **0.925** (74 of 80 cells) |
+
+Cells that differ (local vs cloud):
+
+| Dialog | Criterion | Local | Cloud |
+|---|---|---|---|
+| p2-kz-004 | discovery | False | True |
+| p2-ru-002 | discovery | None | False |
+| p2-kz-002 | identification | False | None |
+| p2-kz-003 | consultation | 0 | 10 |
+| p2-kz-002 | dialogue | 4 | 0 |
+| p2-kz-003 | closure | True | False |
+
+Mean absolute difference of totals: 4.60 points.
+
+On the 24 held-out DEV chats the same model scored 0.969 against the gold set (Claude: 0.984); on the control set the two judges disagree on 6 cells, mostly the same soft criteria (discovery N/A vs Да, consultation 15/20, dialogue 7/10). Gold few-shots were measured (0.963 on the held-out chats) and not adopted. Setup: `api/local/GPU_SERVER.md`.
+
