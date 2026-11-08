@@ -1,78 +1,135 @@
 import * as React from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BarChart3, ChevronsLeft, ChevronsRight, ListChecks, MessagesSquare, Moon, Settings, ShieldCheck, Sun, Wifi, WifiOff } from "lucide-react";
+import { BarChart3, ChevronsLeft, ChevronsRight, ListChecks, MessagesSquare, Settings, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUi } from "@/store/ui";
 import { LANGS, setLang, type Lang } from "@/i18n";
-import { useHealth, useSettings } from "@/api/queries";
+import { useAppeals, useHealth, useSettings } from "@/api/queries";
 import { Button } from "@/components/ui/button";
 import { Hint } from "@/components/ui/misc";
+import { Segmented } from "@/components/ui/tabs";
 import { MOCK } from "@/lib/config";
 import { Badge } from "@/components/ui/badge";
-import { Mascot } from "@/components/Mascot";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { TitleSlotProvider } from "@/components/chrome";
+import { FreedomLogo } from "@/components/FreedomLogo";
 
 const NAV = [
   { to: "/conversations", key: "nav.conversations", icon: MessagesSquare },
   { to: "/checklists", key: "nav.checklists", icon: ListChecks },
-  { to: "/review", key: "nav.review", icon: ShieldCheck },
+  { to: "/review", key: "nav.review", icon: ShieldCheck, count: "appeals" },
   { to: "/analytics", key: "nav.analytics", icon: BarChart3 },
-  { to: "/settings", key: "nav.settings", icon: Settings },
 ] as const;
+const NAV_BOTTOM = [{ to: "/settings", key: "nav.settings", icon: Settings }] as const;
 
 function Wordmark({ collapsed }: { collapsed: boolean }) {
+  const { t } = useTranslation();
   return (
-    <div className={cn("flex h-14 items-center gap-2 px-4", collapsed && "justify-center px-0")}>
-      <Mascot pose="wave" size={28} decorative className="shrink-0" />
-      {!collapsed ? <span className="inline-block size-2 rounded-full bg-accent shadow-[0_0_12px_rgb(var(--accent)/0.7)]" /> : null}
+    <div className={cn("flex flex-col gap-2 pl-2", collapsed && "items-center pl-0")}>
+      <FreedomLogo height={collapsed ? 30 : 26} showWordmark={!collapsed} />
       {!collapsed ? (
-        <span className="font-display text-[17px] font-semibold tracking-tight">
-          CQA <span className="font-normal text-text-2">by Freedom</span>
-        </span>
+        <div className="flex items-center gap-2 pl-0.5">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-text">{t("app.name")}</span>
+          <span className="h-3 w-px bg-line" />
+          <span className="truncate text-[12px] text-text-2">{t("app.tagline")}</span>
+        </div>
       ) : null}
     </div>
   );
 }
 
+function NavItem({ to, label, icon: Icon, count, collapsed }: { to: string; label: string; icon: React.ComponentType<{ className?: string }>; count?: number; collapsed: boolean }) {
+  return (
+    <Hint label={collapsed ? label : undefined} side="right">
+      <NavLink
+        to={to}
+        className={({ isActive }) =>
+          cn(
+            "relative flex h-10 items-center gap-3 rounded-[12px] pl-3 pr-2.5 text-body font-medium text-text transition-colors hover:bg-surface-2/70",
+            isActive && "bg-accent-subtle hover:bg-accent-subtle",
+            collapsed && "justify-center px-0",
+          )
+        }
+      >
+        {({ isActive }) => (
+          <>
+            <Icon className={cn("size-5 shrink-0", !isActive && "opacity-70")} />
+            {!collapsed ? <span className={cn("flex-1 truncate", !isActive && "opacity-75")}>{label}</span> : null}
+            {!collapsed && count ? <span className={cn("num min-w-[22px] rounded-full px-[7px] py-[2px] text-center font-mono text-[12px] leading-[1.4]", isActive ? "bg-surface" : "bg-surface-2")}>{count}</span> : null}
+            {collapsed && count ? <span className="absolute right-2.5 top-2 size-2 rounded-full bg-dot-warn" /> : null}
+          </>
+        )}
+      </NavLink>
+    </Hint>
+  );
+}
+
 export function SideNav() {
   const { t } = useTranslation();
-  const { navCollapsed, setNavCollapsed } = useUi();
+  const { navCollapsed, setNavCollapsed, role, setRole } = useUi();
+  const openAppeals = useAppeals("open");
+  const appealsCount = (openAppeals.data ?? []).filter((a) => a.status === "open").length;
   return (
-    <aside className={cn("flex h-full shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200", navCollapsed ? "w-14" : "w-56")}>
+    <aside className={cn("flex h-full shrink-0 flex-col border-r border-line bg-bg pb-4 pt-5 transition-[width] duration-200", navCollapsed ? "w-[76px] px-3" : "w-64 px-4")}>
       <Wordmark collapsed={navCollapsed} />
-      <nav className="flex flex-1 flex-col gap-0.5 px-2">
+      <nav className="mt-5 flex flex-col gap-0.5">
         {NAV.map((n) => (
-          <Hint key={n.to} label={navCollapsed ? t(n.key) : undefined} side="right">
-            <NavLink
-              to={n.to}
-              className={({ isActive }) =>
-                cn(
-                  "flex h-9 items-center gap-2.5 rounded-sm px-2.5 text-caption font-medium text-text-2 transition-colors hover:bg-surface-2 hover:text-text",
-                  isActive && "bg-tint text-accent hover:bg-tint hover:text-accent",
-                  navCollapsed && "justify-center px-0",
-                )
-              }
-            >
-              <n.icon className="size-4 shrink-0" />
-              {!navCollapsed ? <span className="truncate">{t(n.key)}</span> : null}
-            </NavLink>
-          </Hint>
+          <NavItem key={n.to} to={n.to} label={t(n.key)} icon={n.icon} count={"count" in n ? appealsCount : undefined} collapsed={navCollapsed} />
+        ))}
+        <div className="h-4" />
+        {NAV_BOTTOM.map((n) => (
+          <NavItem key={n.to} to={n.to} label={t(n.key)} icon={n.icon} collapsed={navCollapsed} />
         ))}
       </nav>
-      <div className="px-2 py-2">
-        <Button variant="ghost" size={navCollapsed ? "icon" : "md"} className={cn("w-full justify-start text-text-2", navCollapsed && "justify-center")} onClick={() => setNavCollapsed(!navCollapsed)} title={navCollapsed ? t("nav.expand") : t("nav.collapse")}>
-          {navCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
-          {!navCollapsed ? <span>{t("nav.collapse")}</span> : null}
-        </Button>
-      </div>
+      <div className="flex-1" />
+      {!navCollapsed ? (
+        <div className="mb-3 flex flex-col gap-2.5 rounded-md bg-surface-2/70 p-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white">{t(`role.${role}`).slice(0, 1)}</div>
+            <div className="min-w-0 leading-tight">
+              <div className="truncate text-caption font-medium">{t(`role.${role}`)}</div>
+              <div className="text-small text-text-2">{t("role.label")}</div>
+            </div>
+          </div>
+          <Segmented
+            value={role}
+            onChange={setRole}
+            size="sm"
+            className="flex w-full bg-surface"
+            itemClassName="flex-1"
+            options={(["analyst", "reviewer"] as const).map((r) => ({ value: r, label: t(`role.${r}`) }))}
+          />
+        </div>
+      ) : (
+        <Hint label={t(`role.${role}`)} side="right">
+          <button
+            type="button"
+            onClick={() => setRole(role === "analyst" ? "reviewer" : "analyst")}
+            aria-label={t(`role.${role}`)}
+            className="mx-auto mb-3 flex size-9 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white transition-[filter] hover:brightness-95"
+          >
+            {t(`role.${role}`).slice(0, 1)}
+          </button>
+        </Hint>
+      )}
+      <Button
+        variant="ghost"
+        size={navCollapsed ? "icon" : "sm"}
+        className={cn("text-text-2", navCollapsed ? "mx-auto" : "w-full justify-start")}
+        onClick={() => setNavCollapsed(!navCollapsed)}
+        title={navCollapsed ? t("nav.expand") : t("nav.collapse")}
+        aria-label={navCollapsed ? t("nav.expand") : t("nav.collapse")}
+      >
+        {navCollapsed ? <ChevronsRight /> : <ChevronsLeft />}
+        {!navCollapsed ? <span>{t("nav.collapse")}</span> : null}
+      </Button>
     </aside>
   );
 }
 
-export function TopBar() {
+export function TopBar({ slotRef }: { slotRef: (el: HTMLDivElement | null) => void }) {
   const { t, i18n } = useTranslation();
-  const { role, setRole, theme, setTheme } = useUi();
   const settings = useSettings();
   const health = useHealth();
   const provider = settings.data?.default_provider;
@@ -80,54 +137,28 @@ export function TopBar() {
   const online = !!health.data?.ok;
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-line bg-surface px-4">
-      <div className="flex items-center gap-2">
-        <div className="inline-flex h-8 items-center rounded-sm border border-line bg-surface-2 p-0.5">
-          {(["analyst", "reviewer"] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className={cn("h-full rounded-[4px] px-2.5 text-caption font-medium text-text-2 transition-colors", role === r && "bg-surface text-text shadow-sm")}
-            >
-              {t(`role.${r}`)}
-            </button>
-          ))}
+    <header className="flex h-20 shrink-0 items-center gap-3 border-b border-line bg-bg px-8">
+      <div ref={slotRef} className="flex min-w-0 flex-1 items-center" />
+      {MOCK ? <Badge variant="warning">mock</Badge> : null}
+      <Hint label={online ? `${t("settings.api")}: ${t("settings.ok")}` : t("provider.offline")}>
+        <div className="hidden h-10 max-w-[320px] items-center gap-2 rounded-full bg-surface-2 pl-3.5 pr-4 md:inline-flex">
+          <span className={cn("dot", online ? "bg-dot-ok" : "bg-dot-flag")} />
+          {provider ? (
+            <span className="truncate font-mono text-[12px] text-text">
+              {t(`provider.${provider}` as never, { defaultValue: provider })}
+              {model ? <span className="text-text-2"> · {String(model).replace(/^anthropic:/, "")}</span> : null}
+            </span>
+          ) : (
+            <span className="font-mono text-[12px] text-text-2">{online ? t("provider.badge") : t("provider.offline")}</span>
+          )}
         </div>
-        {MOCK ? <Badge variant="warning">mock</Badge> : null}
-      </div>
-      <div className="flex items-center gap-2">
-        <Hint label={online ? `${t("settings.api")}: ${t("settings.ok")}` : t("provider.offline")}>
-          <div className={cn("inline-flex h-8 items-center gap-1.5 rounded-sm border border-line px-2.5 text-caption", online ? "text-text" : "text-critical")}>
-            {online ? <Wifi className="size-3.5 text-success" /> : <WifiOff className="size-3.5" />}
-            {provider ? (
-              <span>
-                {t(`provider.${provider}` as never, { defaultValue: provider })}
-                {model ? <span className="font-mono text-[11px] text-text-2"> · {String(model).replace(/^anthropic:/, "")}</span> : null}
-              </span>
-            ) : (
-              <span className="text-text-2">{t("provider.badge")}</span>
-            )}
-          </div>
-        </Hint>
-        <div className="inline-flex h-8 items-center rounded-sm border border-line bg-surface-2 p-0.5">
-          {LANGS.map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setLang(l as Lang)}
-              className={cn("h-full rounded-[4px] px-2 font-mono text-[12px] font-medium text-text-2 transition-colors", i18n.language === l && "bg-surface text-text shadow-sm")}
-            >
-              {t(`lang.${l}`)}
-            </button>
-          ))}
-        </div>
-        <Hint label={t("theme.toggle")}>
-          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label={t("theme.toggle")}>
-            {theme === "dark" ? <Sun /> : <Moon />}
-          </Button>
-        </Hint>
-      </div>
+      </Hint>
+      <Segmented
+        value={(LANGS as readonly string[]).includes(i18n.language) ? i18n.language : LANGS[0]}
+        onChange={(l) => setLang(l as Lang)}
+        itemClassName="px-3 font-mono text-[12px]"
+        options={LANGS.map((l) => ({ value: l as string, label: t(`lang.${l}`) }))}
+      />
     </header>
   );
 }
@@ -135,20 +166,23 @@ export function TopBar() {
 export function AppShell() {
   const location = useLocation();
   const mainRef = React.useRef<HTMLElement>(null);
+  const [slot, setSlot] = React.useState<HTMLDivElement | null>(null);
   React.useEffect(() => {
     mainRef.current?.scrollTo({ top: 0 });
   }, [location.pathname]);
   return (
-    <div className="flex h-full w-full overflow-hidden bg-bg">
-      <SideNav />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
-        <main ref={mainRef} className="min-h-0 flex-1 overflow-auto">
-          <ErrorBoundary key={location.pathname}>
-            <Outlet />
-          </ErrorBoundary>
-        </main>
+    <TitleSlotProvider slot={slot}>
+      <div className="flex h-full w-full overflow-hidden bg-bg">
+        <SideNav />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopBar slotRef={setSlot} />
+          <main ref={mainRef} className="min-h-0 flex-1 overflow-auto">
+            <ErrorBoundary key={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
+          </main>
+        </div>
       </div>
-    </div>
+    </TitleSlotProvider>
   );
 }

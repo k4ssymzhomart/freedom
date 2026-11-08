@@ -1,6 +1,6 @@
 import * as React from "react";
 
-const VARS = ["bg", "surface", "surface-2", "line", "text", "text-2", "accent", "success", "warning", "critical", "info"] as const;
+const VARS = ["bg", "surface", "surface-2", "line", "text", "text-2", "accent", "brand", "success", "warning", "critical", "info", "dot-ok", "dot-warn", "dot-flag"] as const;
 export type ThemeColors = Record<(typeof VARS)[number], string>;
 
 function read(): ThemeColors {

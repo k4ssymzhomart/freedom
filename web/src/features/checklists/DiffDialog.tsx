@@ -99,12 +99,12 @@ export function DiffBody({ diff }: { diff: NonNullable<ReturnType<typeof useDiff
 
 function Row({ tone, code, label, rejudge }: { tone: "success" | "critical" | "info" | "warning"; code: string; label: string; rejudge?: boolean }) {
   const { t } = useTranslation();
-  const bar = tone === "success" ? "bg-success" : tone === "critical" ? "bg-critical" : tone === "warning" ? "bg-warning" : "bg-info";
+  const bar = tone === "success" ? "bg-dot-ok" : tone === "critical" ? "bg-dot-flag" : tone === "warning" ? "bg-dot-warn" : "bg-dot-info";
   return (
-    <div className="flex items-center gap-3 rounded-sm border border-line px-3 py-2 text-caption">
-      <span className={`h-5 w-1 rounded-full ${bar}`} />
-      <span className="w-16 font-mono font-semibold">{code}</span>
-      <span className="flex-1 text-text-2">{label}</span>
+    <div className="flex items-center gap-3 rounded-[14px] bg-bg px-4 py-3 text-caption">
+      <span className={`h-5 w-1 shrink-0 rounded-full ${bar}`} />
+      <span className="min-w-16 shrink-0 font-mono font-semibold">{code}</span>
+      <span className="min-w-0 flex-1 text-text-2">{label}</span>
       {rejudge !== undefined ? <Badge variant={rejudge ? "warning" : "outline"}>{rejudge ? t("checklists.diff.rejudge") : t("checklists.diff.noRejudge")}</Badge> : null}
     </div>
   );

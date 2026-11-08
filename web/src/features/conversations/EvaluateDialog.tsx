@@ -6,6 +6,8 @@ import { useChecklists, useSettings } from "@/api/queries";
 import { fmtMoney } from "@/lib/format";
 import { notify, notifyError } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/tabs";
+
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -116,14 +118,15 @@ export function EvaluateDialog({ open, onOpenChange, conversationIds, allowScope
           {allowScopeAll && selectedCount > 0 ? (
             <div className="flex flex-col gap-1.5">
               <Label>{t("conversations.evaluateDialog.scope")}</Label>
-              <div className="inline-flex h-8 w-fit items-center rounded-sm border border-line bg-surface-2 p-0.5">
-                <button type="button" onClick={() => setScopeAll(false)} className={`h-full rounded-[4px] px-2.5 text-caption font-medium ${!scopeAll ? "bg-surface text-text shadow-sm" : "text-text-2"}`}>
-                  {t("conversations.evaluateDialog.scopeSelected", { count: selectedCount })}
-                </button>
-                <button type="button" onClick={() => setScopeAll(true)} className={`h-full rounded-[4px] px-2.5 text-caption font-medium ${scopeAll ? "bg-surface text-text shadow-sm" : "text-text-2"}`}>
-                  {t("conversations.evaluateDialog.scopeAll")}
-                </button>
-              </div>
+              <Segmented
+                value={scopeAll ? "all" : "selected"}
+                onChange={(v) => setScopeAll(v === "all")}
+                className="w-fit"
+                options={[
+                  { value: "selected", label: t("conversations.evaluateDialog.scopeSelected", { count: selectedCount }) },
+                  { value: "all", label: t("conversations.evaluateDialog.scopeAll") },
+                ]}
+              />
             </div>
           ) : null}
 
@@ -193,7 +196,7 @@ export function EvaluateDialog({ open, onOpenChange, conversationIds, allowScope
             ) : null}
           </div>
 
-          <div className="flex min-h-[44px] items-center justify-between rounded-sm border border-line bg-surface-2/60 px-3 py-2 text-caption">
+          <div className="flex min-h-[52px] items-center justify-between rounded-[14px] bg-bg px-4 py-3 text-caption">
             <span className="text-text-2">{t("conversations.evaluateDialog.estimate")}</span>
             {estimate ? (
               <div className="flex flex-wrap items-center justify-end gap-2">

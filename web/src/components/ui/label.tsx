@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>>(
   ({ className, ...props }, ref) => (
-    <LabelPrimitive.Root ref={ref} className={cn("text-label uppercase text-text-2 peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props} />
+    <LabelPrimitive.Root ref={ref} className={cn("label peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)} {...props} />
   ),
 );
 Label.displayName = LabelPrimitive.Root.displayName;

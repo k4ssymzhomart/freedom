@@ -23,7 +23,7 @@ export default function AnalyticsPage() {
   const versions = (checklists.data ?? []).flatMap((c) => c.versions.map((v) => ({ ...v, name: c.name })));
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-6 px-8 py-7">
       <PageHeader
         title={t("analytics.title")}
         subtitle={t("analytics.subtitle")}
@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
       ) : data.error ? (
         <ErrorState error={data.error} onRetry={() => data.refetch()} />
       ) : !data.data || data.data.count === 0 ? (
-        <EmptyState title={t("analytics.empty")} mascot="sleep" />
+        <EmptyState title={t("analytics.empty")} />
       ) : (
         <Body d={data.data} />
       )}
@@ -78,14 +78,14 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
   const fr = d.first_response;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
         <Kpi label={t("analytics.kpi.count")} value={d.count} />
         <Kpi label={t("analytics.kpi.mean")} value={fmtScore(d.mean_total)} tone={scoreTone(d.mean_total)} />
         <Kpi label={t("analytics.kpi.median")} value={fmtScore(d.median_total)} tone={scoreTone(d.median_total)} />
         <Kpi label={t("analytics.kpi.critical")} value={d.critical_count} tone={d.critical_count > 0 ? "critical" : "success"} />
         <Kpi label={t("analytics.kpi.firstResponse")} value={fr ? fmtSeconds(fr.mean_seconds) : "—"} hint={fr?.threshold_seconds != null ? `${fmtPct(fr.over_threshold_share)} ${t("analytics.kpi.overThreshold", { sec: fr.threshold_seconds })}` : undefined} />
-        <div className="card flex flex-col justify-center gap-1 px-4 py-3">
+        <div className="col-span-full flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-line bg-surface px-5 py-4">
           <div className="label">{t("analytics.byLanguage")}</div>
           <div className="flex flex-wrap gap-1.5">
             {d.by_language.map((l) => (
@@ -96,7 +96,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
           </div>
           <div className="flex flex-wrap gap-1.5">
             {d.by_channel.map((c) => (
-              <Badge key={c.channel} variant="outline">
+              <Badge key={c.channel} variant="neutral">
                 {t(`channel.${c.channel}` as never, { defaultValue: c.channel })} {fmtScore(c.mean_total, 1)} <span className="opacity-60">· {c.n}</span>
               </Badge>
             ))}
@@ -104,20 +104,20 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1fr]">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[1fr_1fr]">
         <Section title={t("analytics.distribution")}>
-          <div className="h-56">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={d.distribution} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke={col.line} />
-                <XAxis dataKey="bucket" tick={{ fill: col["text-2"], fontSize: 12, fontFamily: "SF Mono, ui-monospace, Menlo, monospace" }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fill: col["text-2"], fontSize: 12 }} axisLine={false} tickLine={false} />
-                <ChartTooltip cursor={{ fill: col["surface-2"] }} contentStyle={{ background: col.surface, border: `1px solid ${col.line}`, borderRadius: 6, fontSize: 12, color: col.text }} labelStyle={{ color: col["text-2"] }} itemStyle={{ color: col.text }} />
-                <Bar dataKey="n" name={t("analytics.dialogs")} radius={[4, 4, 0, 0]} isAnimationActive={false}>
+                <CartesianGrid vertical={false} stroke={col.line} strokeDasharray="3 4" />
+                <XAxis dataKey="bucket" tick={{ fill: col["text-2"], fontSize: 11, fontFamily: "Geist Mono, ui-monospace, Menlo, monospace" }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fill: col["text-2"], fontSize: 11, fontFamily: "Geist Mono, ui-monospace, Menlo, monospace" }} axisLine={false} tickLine={false} />
+                <ChartTooltip cursor={{ fill: col["surface-2"] }} contentStyle={{ background: col.surface, border: "none", borderRadius: 12, fontSize: 12, color: col.text, boxShadow: "0 12px 32px -12px rgba(14,14,13,.25)" }} labelStyle={{ color: col["text-2"] }} itemStyle={{ color: col.text }} />
+                <Bar dataKey="n" name={t("analytics.dialogs")} radius={[8, 8, 8, 8]} maxBarSize={44} isAnimationActive={false}>
                   {d.distribution.map((b) => {
                     const lo = Number(b.bucket.split("-")[0]);
                     const tone = scoreTone(lo);
-                    return <Cell key={b.bucket} fill={tone === "critical" ? col.critical : tone === "warning" ? col.warning : col.accent} />;
+                    return <Cell key={b.bucket} fill={tone === "critical" ? col["dot-flag"] : tone === "warning" ? col["dot-warn"] : col["dot-ok"]} />;
                   })}
                 </Bar>
               </BarChart>
@@ -125,7 +125,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
           </div>
         </Section>
 
-        <Section title={t("analytics.heatmap")} right={<span className="text-[11px] text-text-2">{t("analytics.heatmapHint")}</span>} bodyClassName="p-0">
+        <Section title={t("analytics.heatmap")} right={<span className="text-small text-text-2">{t("analytics.heatmapHint")}</span>} bodyClassName="p-0">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -147,7 +147,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
                 return (
                   <TableRow key={code}>
                     <TableCell>
-                      <span className="font-mono font-semibold">{code}</span> <span className="text-text-2">{titleOf(code)}</span>
+                      <span className="mr-1.5 rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{code}</span> <span className="text-text-2">{titleOf(code)}</span>
                     </TableCell>
                     {langs.map((l) => (
                       <HeatCell key={l} v={cell(code, l)?.value ?? cell(code, l)?.yes_rate_or_mean ?? null} n={cell(code, l)?.n} scale={isScale} />
@@ -162,7 +162,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
         </Section>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Section title={t("analytics.operators")} bodyClassName="p-0">
           <div className="max-h-80 overflow-auto">
             <Table>
@@ -208,7 +208,7 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
                 {d.worst.map((w) => (
                   <TableRow key={w.conversation_id}>
                     <TableCell>
-                      <Link to={`/conversations/${encodeURIComponent(w.conversation_id)}`} className="font-mono font-medium hover:text-accent">
+                      <Link to={`/conversations/${encodeURIComponent(w.conversation_id)}`} className="font-mono text-[12px] font-medium underline-offset-4 hover:underline">
                         {w.conversation_id}
                       </Link>
                     </TableCell>
@@ -228,10 +228,10 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
         </Section>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Section title={t("analytics.agreement")} bodyClassName="p-0">
           {d.agreement.every((a) => a.n_reviewed === 0) ? (
-            <div className="px-4 py-6 text-center text-caption text-text-2">{t("analytics.noReviews")}</div>
+            <div className="px-5 pb-6 pt-2 text-center text-caption text-text-2">{t("analytics.noReviews")}</div>
           ) : (
             <Table>
               <TableHeader>
@@ -245,7 +245,9 @@ function Body({ d }: { d: NonNullable<ReturnType<typeof useAnalytics>["data"]> }
               <TableBody>
                 {d.agreement.map((a) => (
                   <TableRow key={a.code}>
-                    <TableCell className="font-mono font-semibold">{a.code}</TableCell>
+                    <TableCell>
+                      <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{a.code}</span>
+                    </TableCell>
                     <TableCell className="num text-right font-mono">{a.n_reviewed}</TableCell>
                     <TableCell className="num text-right font-mono">{a.agreement_rate != null ? fmtPct(a.agreement_rate) : "—"}</TableCell>
                     <TableCell className="num text-right font-mono">{a.kappa != null ? a.kappa.toFixed(2) : "—"}</TableCell>
@@ -292,7 +294,7 @@ function HeatCell({ v, n, scale, strong }: { v: number | null; n?: number; scale
   // Scale criteria: value is a mean in points; normalize by a rough max (20 for C4, 10 for C6) is unknown here,
   // so colour only binary yes-rates and show scale means plainly.
   const frac = scale ? null : v;
-  const bg = frac === null ? "transparent" : frac >= 0.85 ? "rgb(var(--success) / 0.22)" : frac >= 0.6 ? "rgb(var(--warning) / 0.22)" : "rgb(var(--critical) / 0.22)";
+  const bg = frac === null ? "transparent" : frac >= 0.85 ? "rgb(var(--dot-ok) / 0.18)" : frac >= 0.6 ? "rgb(var(--dot-warn) / 0.28)" : "rgb(var(--dot-flag) / 0.18)";
   return (
     <TableCell className={cn("num text-center font-mono", strong && "font-semibold")} style={{ background: bg }} title={n != null ? `n = ${n}` : undefined}>
       {scale ? v.toFixed(1) : fmtPct(v)}

@@ -45,7 +45,7 @@ export function AppealDialog({ criterion, open, onOpenChange, onCreated }: { cri
           ) : null}
         </DialogHeader>
         <DialogBody className="flex flex-col gap-3">
-          {criterion ? <div className="rounded-sm border border-line bg-surface-2/60 px-3 py-2 text-caption text-text-2">{criterion.explanation}</div> : null}
+          {criterion ? <div className="rounded-md bg-bg px-4 py-3 text-caption leading-[1.55] text-text-2">{criterion.explanation}</div> : null}
           <div className="flex flex-col gap-1.5">
             <Label>{t("card.appealDialog.comment")}</Label>
             <Textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t("card.appealDialog.placeholder")} className="min-h-[110px]" autoFocus />

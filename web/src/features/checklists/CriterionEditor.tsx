@@ -45,14 +45,14 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
   const voice = c.channel_overrides?.["voice call"]?.instruction ?? "";
 
   return (
-    <div className={cn("card overflow-hidden", c.is_critical && "border-critical/40")}>
-      <div className="flex items-center gap-2 px-3 py-2">
-        <button type="button" className="text-text-2 hover:text-text" onClick={() => setOpen((o) => !o)} aria-label={open ? t("common.collapse") : t("common.expand")}>
+    <div className={cn("overflow-hidden rounded-md border border-line bg-surface", c.is_critical && "border-critical/40")}>
+      <div className="flex items-center gap-2 px-4 py-3 [&_button[role=combobox]]:h-9 [&_input]:h-9">
+        <button type="button" className="flex size-7 items-center justify-center rounded-full text-text-2 hover:bg-surface-2 hover:text-text" onClick={() => setOpen((o) => !o)} aria-label={open ? t("common.collapse") : t("common.expand")}>
           {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         </button>
-        <Input value={c.code} onChange={(e) => set("code", e.target.value.toUpperCase())} className="w-16 font-mono font-semibold" aria-label={t("checklists.editor.code")} />
+        <Input value={c.code} onChange={(e) => set("code", e.target.value.toUpperCase())} className="w-[60px] shrink-0 px-2 text-center font-mono font-semibold" aria-label={t("checklists.editor.code")} />
         <Select value={c.section} onValueChange={(v) => set("section", v)}>
-          <SelectTrigger className="w-24" aria-label={t("checklists.editor.section")}>
+          <SelectTrigger className="w-[92px] shrink-0" aria-label={t("checklists.editor.section")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -63,7 +63,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
             ))}
           </SelectContent>
         </Select>
-        <Input value={c.title} onChange={(e) => set("title", e.target.value)} className="flex-1 font-medium" placeholder={t("checklists.editor.titleCol")} aria-label={t("checklists.editor.titleCol")} />
+        <Input value={c.title} onChange={(e) => set("title", e.target.value)} className="min-w-[140px] flex-1 font-medium" placeholder={t("checklists.editor.titleCol")} aria-label={t("checklists.editor.titleCol")} />
         <Select
           value={c.answer_type}
           onValueChange={(v) => {
@@ -72,7 +72,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
             onChange({ ...c, answer_type, options, max_points: c.is_critical && c.weight === 0 ? 0 : maxPoints(options) });
           }}
         >
-          <SelectTrigger className="w-28" aria-label={t("checklists.editor.answerType")}>
+          <SelectTrigger className="w-[112px] shrink-0" aria-label={t("checklists.editor.answerType")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -80,13 +80,13 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
             <SelectItem value="scale">{t("checklists.editor.scale")}</SelectItem>
           </SelectContent>
         </Select>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1.5">
           <span className="label">{t("checklists.editor.weight")}</span>
-          <Input type="number" min={0} step={1} value={c.weight} onChange={(e) => set("weight", Number(e.target.value))} className="w-16 font-mono" aria-label={t("checklists.editor.weight")} />
+          <Input type="number" min={0} step={1} value={c.weight} onChange={(e) => set("weight", Number(e.target.value))} className="w-[60px] px-2 text-center font-mono" aria-label={t("checklists.editor.weight")} />
         </div>
         {c.is_critical ? <Badge variant="critical">C!</Badge> : null}
         {c.na_allowed ? <Badge variant="outline">N/A</Badge> : null}
-        <div className="ml-1 flex items-center">
+        <div className="ml-auto flex shrink-0 items-center">
           <Button size="icon-sm" variant="ghost" onClick={() => onMove(-1)} disabled={index === 0} aria-label={t("checklists.editor.moveUp")}>
             <ArrowUp />
           </Button>
@@ -102,7 +102,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
         </div>
       </div>
       {open ? (
-        <div className="grid grid-cols-1 gap-4 border-t border-line p-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 border-t border-line bg-bg/50 p-5 lg:grid-cols-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
               <Label>{t("checklists.editor.instruction")}</Label>
@@ -112,7 +112,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
               <Label>{t("checklists.editor.voiceOverride")}</Label>
               <Textarea value={voice} onChange={(e) => set("channel_overrides", { ...c.channel_overrides, "voice call": { instruction: e.target.value } })} className="min-h-[72px]" placeholder="—" />
             </div>
-            <div className="flex flex-wrap items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5 rounded-[14px] bg-surface-2/60 px-4 py-3">
               <label className="flex items-center gap-2 text-caption">
                 <Switch checked={c.na_allowed} onCheckedChange={(v) => set("na_allowed", v)} /> {t("checklists.editor.naAllowed")}
               </label>
@@ -139,7 +139,7 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
               </span>
             </div>
             <div className="flex flex-col gap-1.5">
-              <div className="grid grid-cols-[72px_96px_72px_1fr_28px] gap-1.5 px-1 text-[11px] uppercase tracking-[0.04em] text-text-2">
+              <div className="label grid grid-cols-[72px_96px_72px_1fr_32px] gap-1.5 px-1">
                 <span>{t("checklists.editor.optionValue")}</span>
                 <span>{t("checklists.editor.optionLabel")}</span>
                 <span>{t("checklists.editor.optionPoints")}</span>
@@ -147,12 +147,12 @@ export function CriterionEditor({ c, index, count, sections, onChange, onMove, o
                 <span />
               </div>
               {c.options.map((o, i) => (
-                <div key={i} className="grid grid-cols-[72px_96px_72px_1fr_28px] items-center gap-1.5">
+                <div key={i} className="grid grid-cols-[72px_96px_72px_1fr_32px] items-center gap-1.5">
                   <Input value={String(o.value)} onChange={(e) => setOption(i, { value: c.answer_type === "scale" ? Number(e.target.value) || 0 : e.target.value })} className="font-mono" />
                   <Input value={o.label} onChange={(e) => setOption(i, { label: e.target.value })} />
                   <Input type="number" value={o.points} onChange={(e) => setOption(i, { points: Number(e.target.value) })} className="font-mono" />
                   <Input value={o.anchor ?? ""} onChange={(e) => setOption(i, { anchor: e.target.value })} placeholder="—" />
-                  <Button size="icon-sm" variant="ghost" className="text-critical" onClick={() => onChange({ ...c, options: c.options.filter((_, j) => j !== i) })} disabled={c.options.length <= 2}>
+                  <Button size="icon-sm" variant="ghost" className="text-critical" onClick={() => onChange({ ...c, options: c.options.filter((_, j) => j !== i) })} disabled={c.options.length <= 2} aria-label={t("checklists.editor.remove")}>
                     <Trash2 />
                   </Button>
                 </div>

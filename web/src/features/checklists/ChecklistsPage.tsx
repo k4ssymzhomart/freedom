@@ -49,7 +49,7 @@ export default function ChecklistsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-6 px-8 py-7">
       <PageHeader
         title={t("checklists.title")}
         subtitle={t("checklists.subtitle")}
@@ -67,26 +67,26 @@ export default function ChecklistsPage() {
       ) : lists.error ? (
         <ErrorState error={lists.error} onRetry={() => lists.refetch()} />
       ) : (lists.data ?? []).length === 0 ? (
-        <EmptyState title={t("checklists.empty")} mascot="typing" />
+        <EmptyState title={t("checklists.empty")} />
       ) : (
         (lists.data ?? []).map((cl) => (
           <div key={cl.id} className="card overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
-              <div>
-                <div className="text-h3 font-display">{cl.name}</div>
-                {cl.description ? <div className="text-caption text-text-2">{cl.description}</div> : null}
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
+              <div className="min-w-[280px] max-w-3xl flex-1">
+                <h3 className="font-display text-h3">{cl.name}</h3>
+                {cl.description ? <div className="mt-0.5 text-caption text-text-2">{cl.description}</div> : null}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {cl.active_version ? (
                   <Badge variant="accent">
                     <CheckCircle2 className="size-3" /> v{cl.active_version.version_no} · {cl.active_version.criteria.length} {t("checklists.editor.criteria").toLowerCase()}
                   </Badge>
                 ) : null}
-                <Button variant="secondary" size="sm" onClick={() => setDiffFor(cl.id)} disabled={cl.versions.length < 2}>
+                <Button variant="secondary" onClick={() => setDiffFor(cl.id)} disabled={cl.versions.length < 2}>
                   <GitCompare /> {t("checklists.editor.diff")}
                 </Button>
                 {cl.active_version ? (
-                  <Button variant="primary" size="sm" onClick={() => navigate(`/checklists/${cl.id}/versions/${cl.active_version!.id}`)}>
+                  <Button variant="primary" onClick={() => navigate(`/checklists/${cl.id}/versions/${cl.active_version!.id}`)}>
                     <Pencil /> {t("checklists.openEditor")}
                   </Button>
                 ) : null}
@@ -108,7 +108,7 @@ export default function ChecklistsPage() {
                   .map((v) => (
                     <TableRow key={v.id}>
                       <TableCell>
-                        <Link to={`/checklists/${cl.id}/versions/${v.id}`} className="font-mono font-medium hover:text-accent">
+                        <Link to={`/checklists/${cl.id}/versions/${v.id}`} className="rounded-full bg-surface-2 px-2.5 py-1 font-mono text-[12px] font-medium hover:bg-accent hover:text-accent-fg">
                           v{v.version_no}
                         </Link>
                       </TableCell>
@@ -116,9 +116,9 @@ export default function ChecklistsPage() {
                       <TableCell className="text-text-2">{fmtDate(v.created_at, dateLocale())}</TableCell>
                       <TableCell>{v.is_active ? <Badge variant="accent">{t("common.active")}</Badge> : <span className="text-text-2">—</span>}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1">
                           {!v.is_active ? (
-                            <Button size="sm" variant="ghost" onClick={() => activate(cl.id, v.id, v.version_no)}>
+                            <Button size="sm" variant="secondary" onClick={() => activate(cl.id, v.id, v.version_no)}>
                               {t("common.activate")}
                             </Button>
                           ) : null}

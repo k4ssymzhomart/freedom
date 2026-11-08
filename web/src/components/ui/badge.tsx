@@ -2,21 +2,28 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const badgeVariants = cva("inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-4 whitespace-nowrap", {
-  variants: {
-    variant: {
-      neutral: "border-line bg-surface-2 text-text-2",
-      outline: "border-line bg-transparent text-text-2",
-      accent: "border-accent/40 bg-tint text-accent",
-      success: "border-success/40 bg-success/10 text-success",
-      warning: "border-warning/40 bg-warning/10 text-warning",
-      critical: "border-critical/40 bg-critical/10 text-critical",
-      info: "border-info/40 bg-info/10 text-info",
-      mono: "border-line bg-surface-2 font-mono text-[11px] text-text",
+/**
+ * Chip: subtle pill, status dot, ink label.
+ * Tone variants draw a coloured dot instead of tinting the whole chip, so a table full of them stays calm.
+ */
+const badgeVariants = cva(
+  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-[3px] text-[12px] font-medium leading-[18px] text-text [&_svg]:size-3",
+  {
+    variants: {
+      variant: {
+        neutral: "bg-surface-2",
+        outline: "border border-line bg-surface py-[2px] text-text-2",
+        accent: "bg-accent-subtle",
+        success: "bg-surface-2 before:content-[''] before:dot before:bg-dot-ok",
+        warning: "bg-surface-2 before:content-[''] before:dot before:bg-dot-warn",
+        critical: "bg-critical/10 text-critical before:content-[''] before:dot before:bg-dot-flag",
+        info: "bg-surface-2 before:content-[''] before:dot before:bg-dot-info",
+        mono: "bg-surface-2 px-2 font-mono text-[11px] tracking-[0.02em]",
+      },
     },
+    defaultVariants: { variant: "neutral" },
   },
-  defaultVariants: { variant: "neutral" },
-});
+);
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 

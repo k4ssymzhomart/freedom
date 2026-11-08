@@ -16,8 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Segmented } from "@/components/ui/tabs";
 import { AnswerLabel, EmptyState, ErrorState, LoadingBlock, PageHeader, ScorePill } from "@/components/common";
-import { Mascot } from "@/components/Mascot";
 
 export default function ReviewPage() {
   const { t } = useTranslation();
@@ -27,22 +27,22 @@ export default function ReviewPage() {
   const decided = items.filter((a) => a.status !== "open");
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <PageHeader title={t("review.title")} subtitle={t("review.subtitle")} actions={items.length > 0 ? <Mascot pose="read" size={56} decorative className="-my-2" /> : undefined} />
+    <div className="flex flex-col gap-6 px-8 py-7">
+      <PageHeader title={t("review.title")} subtitle={t("review.subtitle")}  />
       {appeals.isLoading ? (
         <LoadingBlock rows={4} />
       ) : appeals.error ? (
         <ErrorState error={appeals.error} onRetry={() => appeals.refetch()} />
       ) : (
         <>
-          <div className="flex items-center gap-2">
-            <span className="label">{t("review.open")}</span>
-            <Badge variant={open.length ? "warning" : "outline"}>{open.length}</Badge>
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-display text-h3">{t("review.open")}</h2>
+            <span className="num min-w-[24px] rounded-full bg-surface-2 px-2 py-0.5 text-center font-mono text-[12px]">{open.length}</span>
           </div>
-          {open.length === 0 ? <EmptyState title={t("review.empty")} mascot={items.length === 0 ? "sleep" : undefined} /> : open.map((a) => <AppealCard key={a.id} a={a} />)}
-          <div className="mt-2 flex items-center gap-2">
-            <span className="label">{t("review.decided")}</span>
-            <Badge variant="outline">{decided.length}</Badge>
+          {open.length === 0 ? <EmptyState title={t("review.empty")} /> : open.map((a) => <AppealCard key={a.id} a={a} />)}
+          <div className="mt-4 flex items-center gap-2.5">
+            <h2 className="font-display text-h3">{t("review.decided")}</h2>
+            <span className="num min-w-[24px] rounded-full bg-surface-2 px-2 py-0.5 text-center font-mono text-[12px]">{decided.length}</span>
           </div>
           {decided.length === 0 ? <EmptyState title={t("review.emptyDecided")} className="py-8" /> : decided.map((a) => <AppealCard key={a.id} a={a} />)}
         </>
@@ -110,17 +110,17 @@ function AppealCard({ a }: { a: AppealWithContext }) {
   const evidence = a.evidence?.find((e) => e.role === "supports") ?? a.evidence?.[0];
 
   return (
-    <div className={cn("card grid grid-cols-1 gap-0 overflow-hidden", isOpen ? "border-warning/40 lg:grid-cols-[1fr_360px]" : "")}>
-      <div className="flex flex-col gap-3 p-4">
+    <div className={cn("card grid grid-cols-1 gap-0 overflow-hidden", isOpen ? "lg:grid-cols-[1fr_380px]" : "")}>
+      <div className="flex flex-col gap-3.5 p-6">
         <div className="flex flex-wrap items-center gap-2">
-          <Link to={`/conversations/${encodeURIComponent(a.conversation_id)}`} className="inline-flex items-center gap-1 font-mono text-caption font-medium hover:text-accent">
+          <Link to={`/conversations/${encodeURIComponent(a.conversation_id)}`} className="inline-flex items-center gap-1.5 font-mono text-caption font-medium underline-offset-4 hover:underline">
             {a.conversation_id} <ExternalLink className="size-3" />
           </Link>
           {a.language ? <Badge variant="mono">{a.language}</Badge> : null}
           {a.channel ? <Badge variant="outline">{t(`channel.${a.channel}` as never, { defaultValue: a.channel })}</Badge> : null}
-          <span className="font-mono text-caption font-semibold text-text-2">{a.code}</span>
-          <span className="text-body font-medium">{a.title}</span>
-          <span className="ml-auto text-[11px] text-text-2">{fmtDate(a.created_at, dateLocale())}</span>
+          <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{a.code}</span>
+          <span className="min-w-0 text-body font-semibold">{a.title}</span>
+          <span className="ml-auto shrink-0 font-mono text-[11px] text-text-2">{fmtDate(a.created_at, dateLocale())}</span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-caption">
           <span className="inline-flex items-center gap-1.5">
@@ -140,23 +140,23 @@ function AppealCard({ a }: { a: AppealWithContext }) {
             ) : null}
           </span>
         </div>
-        <p className="text-caption text-text-2">{a.explanation}</p>
+        <p className="text-[14px] leading-[1.55] text-text-2">{a.explanation}</p>
         {evidence ? (
-          <div className="rounded-sm border border-accent/30 bg-tint/40 px-3 py-2 font-mono text-[12px]">
-            <span className="num mr-2 text-text-2">[{evidence.turn_idx}]</span>
+          <div className="rounded-[14px] bg-accent-subtle px-4 py-3 font-mono text-[12px]">
+            <span className="num mr-2 text-text-2">[{evidence.turn_idx + 1}]</span>
             <span className="font-sans">{truncate(evidence.quote, 240)}</span>
           </div>
         ) : null}
-        <div className="rounded-sm border border-warning/40 bg-warning/5 px-3 py-2 text-caption">
-          <div className="mb-0.5 flex items-center justify-between">
+        <div className="rounded-[14px] bg-dot-warn/15 px-4 py-3 text-caption">
+          <div className="mb-1 flex items-center justify-between">
             <span className="label">{t("review.comment")}</span>
             <span className="text-[11px] text-text-2">{a.author_label}</span>
           </div>
           {a.comment}
         </div>
         {a.decision ? (
-          <div className={cn("rounded-sm border px-3 py-2 text-caption", a.decision.action === "confirm" ? "border-success/40 bg-success/5" : "border-info/40 bg-info/5")}>
-            <div className="mb-0.5 flex items-center justify-between">
+          <div className={cn("rounded-[14px] px-4 py-3 text-caption", a.decision.action === "confirm" ? "bg-accent-subtle" : "bg-surface-2")}>
+            <div className="mb-1 flex items-center justify-between">
               <span className="label">{t("review.decision")}</span>
               <span className="text-[11px] text-text-2">
                 {t("review.by", { name: a.decision.reviewer_label })} · {fmtDate(a.decision.created_at, dateLocale())}
@@ -172,16 +172,16 @@ function AppealCard({ a }: { a: AppealWithContext }) {
       </div>
 
       {isOpen ? (
-        <div className="flex flex-col gap-3 border-t border-line bg-surface-2/40 p-4 lg:border-l lg:border-t-0">
-          <div className="label">{t("review.decision")}</div>
-          {role !== "reviewer" ? <div className="rounded-sm border border-line bg-surface px-3 py-2 text-caption text-text-2">{t("review.reviewerOnly")}</div> : null}
-          <div className="inline-flex h-8 w-fit items-center rounded-sm border border-line bg-surface p-0.5">
-            {(["confirm", "change"] as const).map((x) => (
-              <button key={x} type="button" onClick={() => setAction(x)} disabled={role !== "reviewer"} className={cn("h-full rounded-[4px] px-3 text-caption font-medium text-text-2 disabled:opacity-60", action === x && "bg-surface-2 text-text shadow-sm")}>
-                {t(`review.${x}`)}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-col gap-4 border-t border-line bg-bg p-6 lg:border-l lg:border-t-0">
+          <h3 className="font-display text-h3">{t("review.decision")}</h3>
+          {role !== "reviewer" ? <div className="rounded-[14px] bg-dot-warn/15 px-4 py-3 text-caption text-text">{t("review.reviewerOnly")}</div> : null}
+          <Segmented
+            value={action}
+            onChange={setAction}
+            disabled={role !== "reviewer"}
+            className="w-fit bg-surface-2"
+            options={(["confirm", "change"] as const).map((x) => ({ value: x, label: t(`review.${x}`) }))}
+          />
           {action === "change" ? (
             <div className="flex flex-col gap-1.5">
               <Label>{t("review.newAnswer")}</Label>
@@ -192,14 +192,14 @@ function AppealCard({ a }: { a: AppealWithContext }) {
                     type="button"
                     disabled={role !== "reviewer"}
                     onClick={() => setAnswer(String(o.value))}
-                    className={cn("rounded-sm border px-2.5 py-1 font-mono text-caption transition-colors disabled:opacity-60", answer === String(o.value) ? "border-accent bg-tint text-accent" : "border-line bg-surface hover:bg-surface-2")}
+                    className={cn("h-9 rounded-full border px-3.5 font-mono text-caption transition-colors disabled:opacity-60", answer === String(o.value) ? "border-accent bg-accent text-accent-fg" : "border-line bg-surface hover:border-line-strong/40")}
                     title={o.anchor ?? undefined}
                   >
-                    {o.label} <span className="text-text-2">· {o.points}</span>
+                    {o.label} <span className="opacity-60">· {o.points}</span>
                   </button>
                 ))}
                 {a.na_allowed ? (
-                  <button type="button" disabled={role !== "reviewer"} onClick={() => setAnswer(NA)} className={cn("rounded-sm border px-2.5 py-1 font-mono text-caption disabled:opacity-60", answer === NA ? "border-accent bg-tint text-accent" : "border-line bg-surface hover:bg-surface-2")}>
+                  <button type="button" disabled={role !== "reviewer"} onClick={() => setAnswer(NA)} className={cn("h-9 rounded-full border px-3.5 font-mono text-caption disabled:opacity-60", answer === NA ? "border-accent bg-accent text-accent-fg" : "border-line bg-surface hover:border-line-strong/40")}>
                     {t("common.na")}
                   </button>
                 ) : null}
@@ -213,7 +213,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
           <label className="flex items-center gap-2 text-caption">
             <Switch checked={fewshot} onCheckedChange={setFewshot} disabled={role !== "reviewer"} /> {t("review.fewshot")}
           </label>
-          <div className="flex items-center justify-between rounded-sm border border-line bg-surface px-3 py-2">
+          <div className="flex items-center justify-between gap-3 rounded-[14px] bg-surface px-4 py-3">
             <div>
               <div className="text-caption text-text-2">{t("review.preview")}</div>
               <div className="text-[11px] text-text-2">{t("review.previewHint")}</div>
@@ -224,7 +224,7 @@ function AppealCard({ a }: { a: AppealWithContext }) {
               {previewing ? <span className="text-caption text-text-2">…</span> : <ScorePill value={action === "confirm" ? a.total_score : preview} />}
             </div>
           </div>
-          <Button variant="primary" onClick={save} loading={saving} disabled={role !== "reviewer" || !reason.trim() || (action === "change" && !answer)}>
+          <Button variant="primary" size="lg" onClick={save} loading={saving} disabled={role !== "reviewer" || !reason.trim() || (action === "change" && !answer)}>
             {t("review.save")}
           </Button>
         </div>

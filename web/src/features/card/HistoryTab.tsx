@@ -34,9 +34,9 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="card overflow-hidden">
-        <div className="border-b border-line px-4 py-2.5">
-          <div className="label">{t("card.history.title")}</div>
+      <div className="overflow-hidden rounded-md border border-line bg-surface">
+        <div className="px-5 pb-2 pt-4">
+          <h3 className="font-display text-h3">{t("card.history.title")}</h3>
         </div>
         <ul>
           {items.map((e) => (
@@ -44,7 +44,7 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
               <button
                 type="button"
                 onClick={() => setSelectedId(e.id)}
-                className={cn("flex w-full flex-wrap items-center gap-3 border-b border-line px-4 py-2.5 text-left text-caption transition-colors last:border-0 hover:bg-surface-2/60", activeId === e.id && "bg-tint/50")}
+                className={cn("flex w-full flex-wrap items-center gap-3 border-t border-line px-5 py-3 text-left text-caption transition-colors hover:bg-bg", activeId === e.id && "bg-accent-subtle/60 hover:bg-accent-subtle/60")}
               >
                 <span className="num font-mono text-text-2">#{e.id}</span>
                 <span className="text-text-2">{fmtDate(e.completed_at ?? e.created_at, dateLocale())}</span>
@@ -64,13 +64,13 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
         </ul>
       </div>
 
-      <div className="card">
-        <div className="border-b border-line px-4 py-2.5">
-          <div className="label">
-            {t("card.history.timeline")} {active ? <span className="num font-mono normal-case tracking-normal text-text-2">#{active.id}</span> : null}
-          </div>
+      <div className="rounded-md border border-line bg-surface">
+        <div className="px-5 pb-1 pt-4">
+          <h3 className="flex items-center gap-2 font-display text-h3">
+            {t("card.history.timeline")} {active ? <span className="num rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-normal text-text-2">#{active.id}</span> : null}
+          </h3>
         </div>
-        <div className="p-4">
+        <div className="px-5 pb-5 pt-3">
           {detail.isLoading ? (
             <LoadingBlock rows={3} />
           ) : timeline.length === 0 ? (
@@ -79,12 +79,12 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
             <div className="flex flex-col gap-4">
               {timeline.map(({ c, appeals }) => (
                 <div key={c.id} className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-caption">
-                    <span className="font-mono font-semibold text-text-2">{c.code}</span>
-                    <span className="font-medium">{c.title}</span>
+                  <div className="flex flex-wrap items-center gap-2 text-caption">
+                    <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-[11px] font-medium">{c.code}</span>
+                    <span className="font-semibold">{c.title}</span>
                     <ReviewBadge state={c.review_state} />
                   </div>
-                  <ol className="relative ml-2 flex flex-col gap-3 border-l border-line pl-5">
+                  <ol className="relative ml-3 flex flex-col gap-4 border-l-2 border-line pl-6">
                     <Step icon={<Scale className="size-3" />} title={t("card.history.original")} meta={fmtDate(active?.created_at, dateLocale())}>
                       <AnswerLabel answer={c.answer} applicable={c.applicable || c.answer !== null} answerType={c.answer_type} /> · {fmtScore(c.score, 0)}/{fmtScore(c.max_points, 0)} · {t("common.total")} {fmtScore(active?.total_score)}
                     </Step>
@@ -118,15 +118,15 @@ export function HistoryTab({ conversationId, current }: { conversationId: string
 }
 
 function Step({ icon, title, meta, tone, children }: { icon: React.ReactNode; title: string; meta?: string; tone?: "warning" | "success" | "info"; children: React.ReactNode }) {
-  const ring = tone === "warning" ? "border-warning text-warning" : tone === "success" ? "border-success text-success" : tone === "info" ? "border-info text-info" : "border-line text-text-2";
+  const ring = tone === "warning" ? "bg-dot-warn text-text" : tone === "success" ? "bg-brand text-white" : tone === "info" ? "bg-dot-info text-white" : "bg-surface-2 text-text";
   return (
     <li className="relative">
-      <span className={cn("absolute -left-[29px] top-0.5 flex size-4 items-center justify-center rounded-full border bg-surface", ring)}>{icon}</span>
+      <span className={cn("absolute -left-[37px] top-0 flex size-6 items-center justify-center rounded-full ring-4 ring-surface", ring)}>{icon}</span>
       <div className="flex items-baseline gap-2 text-caption">
         <span className="font-medium">{title}</span>
-        {meta ? <span className="text-[11px] text-text-2">{meta}</span> : null}
+        {meta ? <span className="text-small text-text-2">{meta}</span> : null}
       </div>
-      <div className="text-caption text-text">{children}</div>
+      <div className="mt-0.5 text-caption text-text">{children}</div>
     </li>
   );
 }
