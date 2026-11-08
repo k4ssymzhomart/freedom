@@ -1,9 +1,10 @@
 import * as React from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BarChart3, ChevronsLeft, ChevronsRight, ListChecks, MessagesSquare, Settings, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUi } from "@/store/ui";
+import { useUi, type Role } from "@/store/ui";
+import { notifyInfo } from "@/lib/toast";
 import { LANGS, setLang, type Lang } from "@/i18n";
 import { useAppeals, useHealth, useSettings } from "@/api/queries";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,25 @@ const NAV = [
   { to: "/analytics", key: "nav.analytics", icon: BarChart3 },
 ] as const;
 const NAV_BOTTOM = [{ to: "/settings", key: "nav.settings", icon: Settings }] as const;
+
+/** Each role has a home screen (docs/ROLES.md §2): switching the role opens it. */
+const ROLE_HOME: Record<Role, { to: string; key: string }> = {
+  analyst: { to: "/conversations", key: "nav.conversations" },
+  reviewer: { to: "/review", key: "nav.review" },
+};
+
+function useSwitchRole() {
+  const { t } = useTranslation();
+  const { role, setRole } = useUi();
+  const navigate = useNavigate();
+  return (next: Role) => {
+    if (next === role) return;
+    setRole(next);
+    const home = ROLE_HOME[next];
+    navigate(home.to);
+    notifyInfo(t("role.switched", { role: t(`role.${next}`) }), t("role.switchedHint", { home: t(home.key) }));
+  };
+}
 
 function Wordmark({ collapsed }: { collapsed: boolean }) {
   const { t } = useTranslation();
@@ -67,7 +87,8 @@ function NavItem({ to, label, icon: Icon, count, collapsed }: { to: string; labe
 
 export function SideNav() {
   const { t } = useTranslation();
-  const { navCollapsed, setNavCollapsed, role, setRole } = useUi();
+  const { navCollapsed, setNavCollapsed, role } = useUi();
+  const switchRole = useSwitchRole();
   const openAppeals = useAppeals("open");
   const appealsCount = (openAppeals.data ?? []).filter((a) => a.status === "open").length;
   return (
@@ -88,13 +109,14 @@ export function SideNav() {
           <div className="flex items-center gap-2.5">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white">{t(`role.${role}`).slice(0, 1)}</div>
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-caption font-medium">{t(`role.${role}`)}</div>
-              <div className="text-small text-text-2">{t("role.label")}</div>
+              <div className="label">{t("role.label")}</div>
+              <div className="mt-0.5 truncate text-caption font-semibold">{t(`role.${role}`)}</div>
             </div>
           </div>
+          <p className="text-small leading-[1.4] text-text-2">{t(`role.desc_${role}`)}</p>
           <Segmented
             value={role}
-            onChange={setRole}
+            onChange={switchRole}
             size="sm"
             className="flex w-full bg-surface"
             itemClassName="flex-1"
@@ -105,7 +127,7 @@ export function SideNav() {
         <Hint label={t(`role.${role}`)} side="right">
           <button
             type="button"
-            onClick={() => setRole(role === "analyst" ? "reviewer" : "analyst")}
+            onClick={() => switchRole(role === "analyst" ? "reviewer" : "analyst")}
             aria-label={t(`role.${role}`)}
             className="mx-auto mb-3 flex size-9 items-center justify-center rounded-full bg-brand font-display text-[13px] font-semibold text-white transition-[filter] hover:brightness-95"
           >
